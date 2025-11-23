@@ -192,12 +192,12 @@ class UploadController extends Controller
     {
         // Validate the request
         $validator = Validator::make($request->all(), [
-            'username' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
             'password' => 'required|string|min:6',
         ], [
-            'username.required' => 'Nama pengguna harus diisi.',
-            'username.string' => 'Nama pengguna harus berupa string.',
-            'username.max' => 'Nama pengguna maksimal 255 karakter.',
+            'email.required' => 'Email harus diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.max' => 'Email maksimal 255 karakter.',
             'password.required' => 'Kata sandi harus diisi.',
             'password.string' => 'Kata sandi harus berupa string.',
             'password.min' => 'Kata sandi minimal 6 karakter.',
@@ -210,22 +210,24 @@ class UploadController extends Controller
                 ->withInput();
         }
 
-        // Simple authentication (replace with proper authentication in production)
-        $username = $request->input('username');
+        // Database authentication
+        $email = $request->input('email');
         $password = $request->input('password');
 
-        // Demo credentials - replace with proper authentication
-        if ($username === 'admin.tomat' && $password === 'admin123') {
+        // Find user by email
+        $user = \DB::table('users')->where('email', $email)->first();
+
+        if ($user && \Hash::check($password, $user->password) && $user->role === 'admin') {
             // Store session
-            session(['admin_logged_in' => true, 'admin_username' => $username]);
+            session(['admin_logged_in' => true, 'admin_user_id' => $user->id, 'admin_name' => $user->name]);
             
-            return redirect()->route('admin.dashboard')->with('success', 'Login berhasil! Selamat datang, ' . $username);
+            return redirect()->route('admin.dashboard')->with('success', 'Login berhasil! Selamat datang, ' . $user->name);
         }
 
         // Failed login
         return redirect()
             ->route('admin.login')
-            ->withErrors(['login' => 'Nama pengguna atau kata sandi salah.'])
+            ->withErrors(['login' => 'Email atau kata sandi salah.'])
             ->withInput($request->except('password'));
     }
 }

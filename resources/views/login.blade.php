@@ -9,8 +9,11 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700&display=swap" rel="stylesheet" />
     
-    <!-- Styles -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Custom styles for better focus states */
         .input-field:focus {
@@ -73,18 +76,18 @@
 
                 <!-- Nama Pengguna Field -->
                 <div>
-                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
-                        Nama Pengguna
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                        Email
                     </label>
                     <input 
-                        type="text" 
-                        id="username" 
-                        name="username" 
-                        value="{{ old('username', 'admin.tomat') }}"
-                        placeholder="admin.tomat"
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        value="{{ old('email') }}"
+                        placeholder="admin@gmail.com"
                         class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 transition-all duration-200"
                         required
-                        autocomplete="username"
+                        autocomplete="email"
                     >
                 </div>
 

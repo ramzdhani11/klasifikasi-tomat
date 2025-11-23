@@ -28,7 +28,10 @@
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
                         <a href="#" class="text-gray-900 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Beranda</a>
-                        <a href="#" class="text-gray-500 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Tentang kami</a>
+                        <a href="{{ route('about') }}"class="text-gray-500 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Tentang kami</a>
+                        <a href="{{ route('login') }}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Login
+                        </a>
                     </div>
                 </div>
                 <div class="md:hidden">
@@ -57,9 +60,9 @@
                         <a href="{{ route('upload.index') }}" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 inline-block text-center">
                             📤 Unggah Gambar Tomat
                         </a>
-                        <button class="bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-8 rounded-lg shadow-md border border-gray-200 transition-all duration-200">
+                        <a href="{{ route('about') }}" class="bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-8 rounded-lg shadow-md border border-gray-200 transition-all duration-200 inline-block text-center">
                             Pelajari Lebih Lanjut
-                        </button>
+                        </a>
                     </div>
                 </div>
                 <div class="relative">

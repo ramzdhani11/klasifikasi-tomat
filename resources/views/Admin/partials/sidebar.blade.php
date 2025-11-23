@@ -37,9 +37,22 @@
         </a>
     </nav>
     
+    <!-- User Profile Section -->
+    <div class="p-4 border-t border-gray-200">
+        <div class="flex items-center space-x-3 px-4 py-3">
+            <div class="w-8 h-8 bg-gradient-to-br from-red-400 to-pink-400 rounded-full flex items-center justify-center">
+                <i class="fas fa-user text-white text-sm"></i>
+            </div>
+            <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">{{ session('admin_name', 'Admin') }}</p>
+                <p class="text-xs text-gray-500">Administrator</p>
+            </div>
+        </div>
+    </div>
+    
     <!-- Logout Section -->
     <div class="p-4 border-t border-gray-200">
-        <a href="{{ route('logout') }}" 
+        <a href="{{ route('admin.logout') }}" 
            class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-all">
             <i class="fas fa-sign-out-alt w-5"></i>
             <span>Logout</span>
