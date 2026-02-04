@@ -13,11 +13,16 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
+        // Clear existing admin users first
+        DB::table('users')->where('role', 'admin')->delete();
+        
+        // Create single admin user
         DB::table('users')->insert([
             'name' => 'Admin',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('admin123'),
             'role' => 'admin',
+            'email_verified_at' => now(),
             'created_at' => now(),
             'updated_at' => now(),
         ]);

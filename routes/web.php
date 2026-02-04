@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UploadController;
+use App\Http\Controllers\AdminController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -37,13 +38,13 @@ Route::get('/admin/dashboard', function () {
     return view('Admin.index');
 })->name('admin.dashboard');
 
-// Manage admin route
-Route::get('/admin/manage-admin', function () {
-    if (!session('admin_logged_in')) {
-        return redirect()->route('admin.login')->with('error', 'Silakan login terlebih dahulu.');
-    }
-    return view('Admin.manage-admin');
-})->name('admin.manage-admin');
+// Manage admin routes
+Route::get('/admin/manage-admin', [AdminController::class, 'index'])->name('admin.manage-admin');
+Route::post('/admin/manage-admin', [AdminController::class, 'store'])->name('admin.manage-admin.store');
+Route::get('/admin/manage-admin/{id}/edit', [AdminController::class, 'edit'])->name('admin.manage-admin.edit');
+Route::put('/admin/manage-admin/{id}', [AdminController::class, 'update'])->name('admin.manage-admin.update');
+Route::delete('/admin/manage-admin/{id}', [AdminController::class, 'destroy'])->name('admin.manage-admin.destroy');
+Route::patch('/admin/manage-admin/{id}/toggle-status', [AdminController::class, 'toggleStatus'])->name('admin.manage-admin.toggle-status');
 
 // Classification history route
 Route::get('/admin/classification-history', function () {

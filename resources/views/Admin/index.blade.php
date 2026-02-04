@@ -47,12 +47,12 @@
             <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
                 <i class="fas fa-users text-orange-600 text-xl"></i>
             </div>
-            <span class="text-xs text-gray-600 font-medium bg-gray-50 px-2 py-1 rounded-full">
-                0%
+            <span class="text-xs bg-orange-100 text-orange-800 font-medium px-3 py-1 rounded-full">
+                {{ App\Models\User::where('role', 'admin')->count() }}
             </span>
         </div>
-        <h3 class="text-2xl font-bold text-gray-900 mb-1">5</h3>
-        <p class="text-sm text-gray-600">Admin Aktif</p>
+        <h3 class="text-lg font-bold text-gray-900 mb-1">Admin Aktif</h3>
+        <p class="text-sm text-gray-600">Total admin terdaftar</p>
     </div>
     
     <!-- Data Hari Ini Card -->

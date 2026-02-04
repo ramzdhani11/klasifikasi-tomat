@@ -22,15 +22,15 @@
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <span class="text-2xl font-bold text-red-600">🍅 MaturityScan</span>
+                        <span class="text-2xl font-bold text-red-600">MaturityScan</span>
                     </div>
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
                         <a href="#" class="text-gray-900 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Beranda</a>
                         <a href="{{ route('about') }}"class="text-gray-500 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Tentang kami</a>
-                        <a href="{{ route('login') }}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                            <i class="fas fa-sign-in-alt mr-2"></i>Login
+                        <a href="{{ route('login') }}" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors">
+                            Login
                         </a>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                         <a href="{{ route('upload.index') }}" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 inline-block text-center">
-                            📤 Unggah Gambar Tomat
+                            Unggah Gambar Tomat
                         </a>
                         <a href="{{ route('about') }}" class="bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-8 rounded-lg shadow-md border border-gray-200 transition-all duration-200 inline-block text-center">
                             Pelajari Lebih Lanjut
@@ -72,7 +72,7 @@
                              class="rounded-lg shadow-md w-full h-auto">
                     </div>
                     <div class="absolute -bottom-4 -right-4 bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full font-semibold text-sm shadow-lg">
-                        🌟 Akurasi 95%
+                        <i class="fas fa-star mr-2"></i>Akurasi 95%
                     </div>
                 </div>
             </div>
@@ -90,7 +90,7 @@
                 <!-- Mentah Card -->
                 <div class="bg-green-50 border-2 border-green-200 rounded-xl p-8 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
                     <div class="w-20 h-20 bg-green-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-                        <span class="text-3xl">🍃</span>
+                        <i class="fas fa-leaf text-3xl text-green-200"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-green-800 mb-4">Mentah</h3>
                     <p class="text-gray-600 mb-4">Tomat yang belum matang sempurna, berwarna hijau dan tekstur masih keras.</p>
@@ -102,7 +102,7 @@
                 <!-- Setengah Matang Card -->
                 <div class="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-8 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
                     <div class="w-20 h-20 bg-yellow-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-                        <span class="text-3xl">🟡</span>
+                        <i class="fas fa-circle-half-stroke text-3xl text-yellow-200"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-yellow-800 mb-4">Setengah Matang</h3>
                     <p class="text-gray-600 mb-4">Tomat dalam proses pematangan, perpaduan warna hijau dan merah.</p>
@@ -114,7 +114,7 @@
                 <!-- Matang Card -->
                 <div class="bg-red-50 border-2 border-red-200 rounded-xl p-8 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
                     <div class="w-20 h-20 bg-red-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-                        <span class="text-3xl">🍅</span>
+                        <i class="fas fa-circle text-3xl text-red-200"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-red-800 mb-4">Matang</h3>
                     <p class="text-gray-600 mb-4">Tomat matang sempurna, berwarna merah cerah dan tekstur lembut.</p>
@@ -138,7 +138,7 @@
                 <div class="relative">
                     <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 text-center">
                         <div class="w-16 h-16 bg-blue-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-                            <span class="text-2xl">📷</span>
+                            <i class="fas fa-camera text-2xl text-white"></i>
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-4">Unggah Gambar</h3>
                         <p class="text-gray-600">Ambil foto tomat atau unggah gambar dari galeri perangkat Anda.</p>
@@ -154,7 +154,7 @@
                 <div class="relative">
                     <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 text-center">
                         <div class="w-16 h-16 bg-purple-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-                            <span class="text-2xl">🤖</span>
+                            <i class="fas fa-robot text-2xl text-white"></i>
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-4">Analisis AI</h3>
                         <p class="text-gray-600">Sistem AI kami menganalisis warna, tekstur, dan bentuk tomat secara otomatis.</p>
@@ -170,7 +170,7 @@
                 <div class="relative">
                     <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 text-center">
                         <div class="w-16 h-16 bg-green-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-                            <span class="text-2xl">📊</span>
+                            <i class="fas fa-chart-line text-2xl text-white"></i>
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-4">Dapatkan Hasil</h3>
                         <p class="text-gray-600">Lihat hasil klasifikasi kematangan tomat dengan akurasi tinggi.</p>
@@ -208,16 +208,16 @@
                     <h3 class="text-lg font-semibold mb-4">Connect</h3>
                     <div class="flex space-x-4">
                         <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-700 transition-colors">
-                            <span class="text-lg">📘</span>
+                            <i class="fab fa-facebook-f text-lg"></i>
                         </a>
                         <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-700 transition-colors">
-                            <span class="text-lg">🐦</span>
+                            <i class="fab fa-twitter text-lg"></i>
                         </a>
                         <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-700 transition-colors">
-                            <span class="text-lg">📷</span>
+                            <i class="fab fa-instagram text-lg"></i>
                         </a>
                         <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-700 transition-colors">
-                            <span class="text-lg">💼</span>
+                            <i class="fab fa-linkedin-in text-lg"></i>
                         </a>
                     </div>
                     <div class="mt-4">

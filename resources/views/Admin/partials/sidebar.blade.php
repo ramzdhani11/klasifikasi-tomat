@@ -13,25 +13,25 @@
     <!-- Navigation Menu -->
     <nav class="flex-1 p-4 space-y-2">
         <a href="{{ route('admin.dashboard') }}" 
-           class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-all {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+           class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-all {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
             <i class="fas fa-home w-5"></i>
             <span>Dashboard</span>
         </a>
         
         <a href="{{ route('admin.manage-admin') }}" 
-           class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-all {{ request()->routeIs('admin.manage-admin') ? 'active' : '' }}">
+           class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-all {{ request()->routeIs('admin.manage-admin') ? 'active' : '' }}">
             <i class="fas fa-users w-5"></i>
             <span>Kelola Akun Admin</span>
         </a>
         
         <a href="{{ route('admin.classification-history') }}" 
-           class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-all {{ request()->routeIs('admin.classification-history') ? 'active' : '' }}">
+           class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-all {{ request()->routeIs('admin.classification-history') ? 'active' : '' }}">
             <i class="fas fa-history w-5"></i>
             <span>Riwayat Klasifikasi</span>
         </a>
         
         <a href="{{ route('admin.system-statistics') }}" 
-           class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-all {{ request()->routeIs('admin.system-statistics') ? 'active' : '' }}">
+           class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-all {{ request()->routeIs('admin.system-statistics') ? 'active' : '' }}">
             <i class="fas fa-chart-bar w-5"></i>
             <span>Statistik Sistem</span>
         </a>
