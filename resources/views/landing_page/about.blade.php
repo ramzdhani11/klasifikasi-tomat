@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tentang Kami - MaturityScan Tomat</title>
+    <title>Tentang Kami -Tomato Maturity Scan </title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -22,7 +22,7 @@
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center space-x-8">
                     <div class="flex-shrink-0">
-                        <span class="text-xl font-bold text-red-600">🍅 MaturityScan</span>
+                        <span class="text-xl font-bold text-red-600">🍅 Tomato Maturity Scan</span>
                     </div>
                     <div class="hidden md:block">
                         <div class="flex items-baseline space-x-6">
@@ -42,7 +42,7 @@
         <section class="py-24 lg:py-32">
             <div class="text-center space-y-8">
                 <h1 class="text-4xl lg:text-6xl font-bold text-red-600 leading-tight">
-                    Mengenal MaturityScan Tomat: Solusi Klasifikasi Kematangan Inovatif Anda
+                    Mengenal  MaturityScan Tomat: Solusi Klasifikasi Kematangan Inovatif Anda
                 </h1>
                 <p class="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
                     Platform berbasis AI yang dirancang khusus untuk membantu petani dan distributor dalam menentukan tingkat kematangan tomat secara akurat dan efisien.
@@ -240,7 +240,7 @@
         <div class="max-w-5xl mx-auto px-6 lg:px-8">
             <div class="text-center space-y-4">
                 <p class="text-sm text-gray-500">
-                    © 2025 MaturityScan Tomat. All rights reserved.
+                    © 2026 TomatoMaturityScan Tomat. All rights reserved.
                 </p>
                 <p class="text-sm text-gray-400">
                     Made with ♥ Wasily

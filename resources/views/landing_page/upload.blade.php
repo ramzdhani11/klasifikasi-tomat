@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Unggah Gambar Tomat - MaturityScan</title>
+    <title>Unggah Gambar Tomat - Tomato Maturity Scan</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -33,7 +33,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
-                    <span class="text-2xl font-bold text-red-600">🍅 MaturityScan</span>
+                    <span class="text-2xl font-bold text-red-600">🍅 Tomato Maturity Scan</span>
                 </div>
 
                 <div class="hidden md:block">
@@ -160,7 +160,7 @@
     <!-- Footer -->
     <footer class="bg-gray-900 text-white py-6 mt-auto">
         <div class="max-w-7xl mx-auto text-center text-gray-400 text-sm">
-            © 2025 MaturityScan Tomat. All rights reserved.
+            © 2025 TomatoMaturityScan Tomat. All rights reserved.
         </div>
     </footer>
 

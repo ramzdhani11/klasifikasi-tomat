@@ -15,8 +15,8 @@ class AdminController extends Controller
             return redirect()->route('admin.login')->with('error', 'Silakan login terlebih dahulu.');
         }
         
-        $admins = User::where('role', 'admin')->get();
-        \Log::info('Admins fetched for UI', ['count' => $admins->count(), 'admins' => $admins->pluck('email')->toArray()]);
+        // Ambil semua admin dengan role 'admin'
+        $admins = User::where('role', 'admin')->orderBy('created_at', 'desc')->get();
         
         return view('Admin.manage-admin', compact('admins'));
     }
@@ -27,25 +27,23 @@ class AdminController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Debug log
-        \Log::info('Admin store request data', ['request_data' => $request->all()]);
-
+        // Validate input - role tidak termasuk, otomatis 'admin'
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-            'role' => 'required|in:admin'
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
+        // Create admin dengan role selalu 'admin', tidak dari input
         $admin = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'role' => 'admin',  // Role SELALU 'admin'
             'email_verified_at' => now()
         ]);
 
@@ -69,21 +67,27 @@ class AdminController extends Controller
         }
 
         $admin = User::findOrFail($id);
+        
+        // Pastikan hanya admin yang dapat diupdate
+        if ($admin->role !== 'admin') {
+            return response()->json(['error' => 'Hanya admin yang dapat dikelola'], 422);
+        }
 
+        // Validate input - role tidak termasuk, tidak boleh diubah
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,'.$id,
-            'role' => 'required|in:admin'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
+        // Update hanya name dan email, role TIDAK boleh diubah
         $admin->update([
             'name' => $request->name,
             'email' => $request->email,
-            'role' => $request->role
+            // Role selalu 'admin', tidak dapat diubah
         ]);
 
         if ($request->filled('password')) {
@@ -100,6 +104,11 @@ class AdminController extends Controller
         }
 
         $admin = User::findOrFail($id);
+        
+        // Pastikan hanya admin yang dihapus
+        if ($admin->role !== 'admin') {
+            return response()->json(['error' => 'Hanya admin yang dapat dihapus'], 422);
+        }
         
         // Prevent deleting the currently logged in admin
         if ($admin->id == session('admin_user_id')) {

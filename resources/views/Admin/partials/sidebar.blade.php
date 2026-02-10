@@ -6,7 +6,7 @@
             <div class="w-10 h-10 bg-gradient-to-br from-red-400 to-red-600 rounded-lg flex items-center justify-center">
                 <i class="fas fa-robot text-white text-lg"></i>
             </div>
-            <h1 class="text-xl font-bold text-gray-800">ML System</h1>
+            <h1 class="text-xl font-bold text-gray-800">TomatoScan</h1>
         </div>
     </div>
     
@@ -61,7 +61,7 @@
     
     <!-- Footer -->
     <div class="p-4 text-center text-xs text-gray-500 border-t border-gray-200">
-        Made with <span class="text-red-500">❤️</span> by ML System Team
+        Made with <span class="text-red-500">❤️</span> by TomatoScan Team
     </div>
 </aside>
 

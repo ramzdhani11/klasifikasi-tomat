@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login Admin - MaturityScan Tomat</title>
+    <title>Login Admin - TomatoScan Tomat</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -41,7 +41,7 @@
             <div class="text-center mb-8">
                 <div class="mb-4">
                     <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto">
-                        <span class="text-2xl">🍅</span>
+                        <span class="text-2xl">🍅Tomato Maturity Scan</span>
                     </div>
                 </div>
                 <h1 class="text-2xl font-bold text-gray-900 mb-2">Login Admin</h1>
@@ -161,8 +161,8 @@
             <!-- Additional Links -->
             <div class="mt-6 text-center">
                 <p class="text-sm text-gray-600">
-                    Belum punya akun? 
-                    <a href="#" class="text-red-600 hover:text-red-700 font-medium transition-colors">
+                    Belum punya akun admin? 
+                    <a href="{{ route('admin.manage-admin') }}" class="text-red-600 hover:text-red-700 font-medium transition-colors">
                         Hubungi administrator
                     </a>
                 </p>

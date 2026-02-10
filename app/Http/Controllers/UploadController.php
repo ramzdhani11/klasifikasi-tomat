@@ -190,7 +190,7 @@ class UploadController extends Controller
      */
     public function adminLogin(Request $request)
     {
-        // Validate the request
+        // Validate input
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|max:255',
             'password' => 'required|string|min:6',
@@ -210,24 +210,31 @@ class UploadController extends Controller
                 ->withInput();
         }
 
-        // Database authentication
         $email = $request->input('email');
         $password = $request->input('password');
 
-        // Find user by email
-        $user = \DB::table('users')->where('email', $email)->first();
+        // Query hanya admin dengan role 'admin'
+        $user = \DB::table('users')
+            ->where('email', $email)
+            ->where('role', 'admin')  // Hanya admin yang dapat login
+            ->first();
 
+        // Verifikasi password dan pastikan role adalah 'admin'
         if ($user && \Hash::check($password, $user->password) && $user->role === 'admin') {
-            // Store session
-            session(['admin_logged_in' => true, 'admin_user_id' => $user->id, 'admin_name' => $user->name]);
+            // Simpan session
+            session([
+                'admin_logged_in' => true,
+                'admin_user_id' => $user->id,
+                'admin_name' => $user->name
+            ]);
             
             return redirect()->route('admin.dashboard')->with('success', 'Login berhasil! Selamat datang, ' . $user->name);
         }
 
-        // Failed login
+        // Login gagal
         return redirect()
             ->route('admin.login')
-            ->withErrors(['login' => 'Email atau kata sandi salah.'])
+            ->withErrors(['login' => 'Email atau kata sandi salah. Hanya admin yang dapat login.'])
             ->withInput($request->except('password'));
     }
 }
