@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Klasifikasi Kematangan Tomat Otomatis</title>
+    <title>Klasifikasi Kematangan Tomat</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -22,7 +22,7 @@
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <span class="text-2xl font-bold text-red-600">MaturityScan</span>
+                        <span class="text-2xl font-bold text-red-600">MaturityScan Tomat</span>
                     </div>
                 </div>
                 <div class="hidden md:block">
@@ -53,12 +53,12 @@
                     <h1 class="text-4xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                         Klasifikasi Kematangan Tomat Otomatis
                     </h1>
-                    <p class="text-lg text-gray-600 mb-8 leading-relaxed">
-                        MaturityScan Tomat adalah aplikasi web modern yang dirancang untuk mengklasifikasikan kematangan tomat menggunakan analisis gambar berbasis AI.
+                    <p class="text-lg text-gray-600 mb-8 leading-relaxed text-justify">
+                        MaturityScan Tomat adalah aplikasi berbasis website yang membantu Anda menentukan tingkat kematangan tomat secara otomatis menggunakan analisis citra digital. Sistem memanfaatkan metode Color Histogram dan algoritma Random Forest untuk memberikan hasil klasifikasi yang cepat dan objektif.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                         <a href="{{ route('upload.index') }}" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 inline-block text-center">
-                            Unggah Gambar Tomat
+                           Mulai Klasifikasi
                         </a>
                         <a href="{{ route('about') }}" class="bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-8 rounded-lg shadow-md border border-gray-200 transition-all duration-200 inline-block text-center">
                             Pelajari Lebih Lanjut
@@ -67,12 +67,9 @@
                 </div>
                 <div class="relative">
                     <div class="bg-white rounded-2xl shadow-2xl p-8 transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                        <img src="https://images.unsplash.com/photo-1592924357228-91a4b4e5d53f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                        <img src="{{ asset('assets/images/tomatt.png') }}" 
                              alt="Fresh Tomatoes" 
                              class="rounded-lg shadow-md w-full h-auto">
-                    </div>
-                    <div class="absolute -bottom-4 -right-4 bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full font-semibold text-sm shadow-lg">
-                        <i class="fas fa-star mr-2"></i>Akurasi 95%
                     </div>
                 </div>
             </div>
@@ -89,8 +86,8 @@
             <div class="grid md:grid-cols-3 gap-8">
                 <!-- Mentah Card -->
                 <div class="bg-green-50 border-2 border-green-200 rounded-xl p-8 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-                    <div class="w-20 h-20 bg-green-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-                        <i class="fas fa-leaf text-3xl text-green-200"></i>
+                    <div class="w-32 h-32 bg-green-500 rounded-full mx-auto mb-6 flex items-center justify-center p-2">
+                        <img src="{{ asset('assets/images/mentah.jpg') }}" alt="Tomat Mentah" class="w-full h-full object-contain rounded-full">
                     </div>
                     <h3 class="text-2xl font-bold text-green-800 mb-4">Mentah</h3>
                     <p class="text-gray-600 mb-4">Tomat yang belum matang sempurna, berwarna hijau dan tekstur masih keras.</p>
@@ -101,8 +98,8 @@
 
                 <!-- Setengah Matang Card -->
                 <div class="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-8 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-                    <div class="w-20 h-20 bg-yellow-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-                        <i class="fas fa-circle-half-stroke text-3xl text-yellow-200"></i>
+                    <div class="w-32 h-32 bg-yellow-500 rounded-full mx-auto mb-6 flex items-center justify-center p-2">
+                        <img src="{{ asset('assets/images/setengahmateng.jpg') }}" alt="Tomat Setengah Matang" class="w-full h-full object-contain rounded-full">
                     </div>
                     <h3 class="text-2xl font-bold text-yellow-800 mb-4">Setengah Matang</h3>
                     <p class="text-gray-600 mb-4">Tomat dalam proses pematangan, perpaduan warna hijau dan merah.</p>
@@ -113,8 +110,8 @@
 
                 <!-- Matang Card -->
                 <div class="bg-red-50 border-2 border-red-200 rounded-xl p-8 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-                    <div class="w-20 h-20 bg-red-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-                        <i class="fas fa-circle text-3xl text-red-200"></i>
+                    <div class="w-32 h-32 bg-red-500 rounded-full mx-auto mb-6 flex items-center justify-center p-2">
+                        <img src="{{ asset('assets/images/matang.jpg') }}" alt="Tomat Matang" class="w-full h-full object-contain rounded-full">
                     </div>
                     <h3 class="text-2xl font-bold text-red-800 mb-4">Matang</h3>
                     <p class="text-gray-600 mb-4">Tomat matang sempurna, berwarna merah cerah dan tekstur lembut.</p>
@@ -133,15 +130,15 @@
                 <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Bagaimana Cara Kerjanya?</h2>
                 <p class="text-lg text-gray-600">Tiga langkah mudah untuk mengklasifikasikan kematangan tomat Anda</p>
             </div>
-            <div class="grid md:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                 <!-- Step 1 -->
                 <div class="relative">
-                    <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 text-center">
-                        <div class="w-16 h-16 bg-blue-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-                            <i class="fas fa-camera text-2xl text-white"></i>
+                    <div class="bg-white rounded-xl p-4 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 text-center min-h-[280px] md:min-h-[320px]">
+                        <div class="w-12 h-12 md:w-16 md:h-16 bg-blue-500 rounded-full mx-auto mb-4 md:mb-6 flex items-center justify-center">
+                            <i class="fas fa-camera text-lg md:text-2xl text-white"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Unggah Gambar</h3>
-                        <p class="text-gray-600">Ambil foto tomat atau unggah gambar dari galeri perangkat Anda.</p>
+                        <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-2 md:mb-4">Unggah Gambar</h3>
+                        <p class="text-sm md:text-base text-gray-600 text-justify md:text-center">Ambil foto tomat atau unggah gambar dari galeri perangkat Anda.</p>
                     </div>
                     <div class="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2">
                         <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
@@ -152,12 +149,12 @@
 
                 <!-- Step 2 -->
                 <div class="relative">
-                    <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 text-center">
-                        <div class="w-16 h-16 bg-purple-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-                            <i class="fas fa-robot text-2xl text-white"></i>
+                    <div class="bg-white rounded-xl p-4 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 text-center min-h-[280px] md:min-h-[320px]">
+                        <div class="w-12 h-12 md:w-16 md:h-16 bg-purple-500 rounded-full mx-auto mb-4 md:mb-6 flex items-center justify-center">
+                            <i class="fas fa-palette text-lg md:text-2xl text-white"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Analisis AI</h3>
-                        <p class="text-gray-600">Sistem AI kami menganalisis warna, tekstur, dan bentuk tomat secara otomatis.</p>
+                        <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-2 md:mb-4">Ekstraksi Fitur Warna</h3>
+                        <p class="text-sm md:text-base text-gray-600 text-justify md:text-center">Sistem mengekstraksi fitur warna menggunakan<br>Color Histogram (RGB) untuk membaca distribusi warna tomat.</p>
                     </div>
                     <div class="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2">
                         <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
@@ -168,12 +165,12 @@
 
                 <!-- Step 3 -->
                 <div class="relative">
-                    <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 text-center">
-                        <div class="w-16 h-16 bg-green-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-                            <i class="fas fa-chart-line text-2xl text-white"></i>
+                    <div class="bg-white rounded-xl p-4 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 text-center min-h-[280px] md:min-h-[320px]">
+                        <div class="w-12 h-12 md:w-16 md:h-16 bg-green-500 rounded-full mx-auto mb-4 md:mb-6 flex items-center justify-center">
+                            <i class="fas fa-brain text-lg md:text-2xl text-white"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Dapatkan Hasil</h3>
-                        <p class="text-gray-600">Lihat hasil klasifikasi kematangan tomat dengan akurasi tinggi.</p>
+                        <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-2 md:mb-4">Klasifikasi & Hasil</h3>
+                        <p class="text-sm md:text-base text-gray-600 text-justify md:text-center">Fitur warna diproses dengan Random Forest (RF)<br>untuk menentukan tingkat kematangan secara real-time.</p>
                     </div>
                 </div>
             </div>
@@ -221,7 +218,7 @@
                         </a>
                     </div>
                     <div class="mt-4">
-                        <p class="text-gray-400 text-sm">© 2024 MaturityScan Tomat. All rights reserved.</p>
+                        <p class="text-gray-400 text-sm">© 2026 MaturityScanTomat. All rights reserved.</p>
                     </div>
                 </div>
             </div>

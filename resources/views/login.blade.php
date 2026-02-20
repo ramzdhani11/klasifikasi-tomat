@@ -40,9 +40,6 @@
             <!-- Title & Description -->
             <div class="text-center mb-8">
                 <div class="mb-4">
-                    <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto">
-                        <span class="text-2xl">🍅Tomato Maturity Scan</span>
-                    </div>
                 </div>
                 <h1 class="text-2xl font-bold text-gray-900 mb-2">Login Admin</h1>
                 <p class="text-gray-600 text-sm">Silakan masukkan kredensial Anda untuk melanjutkan.</p>

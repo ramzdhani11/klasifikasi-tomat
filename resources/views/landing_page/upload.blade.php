@@ -33,13 +33,12 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
-                    <span class="text-2xl font-bold text-red-600">🍅 Tomato Maturity Scan</span>
+                    <span class="text-2xl font-bold text-red-600">MaturityScan Tomat </span>
                 </div>
 
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
                         <a href="/" class="text-gray-900 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium">Beranda</a>
-                        <a href="#" class="text-gray-500 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium">Tentang</a>
                     </div>
                 </div>
 
@@ -160,7 +159,7 @@
     <!-- Footer -->
     <footer class="bg-gray-900 text-white py-6 mt-auto">
         <div class="max-w-7xl mx-auto text-center text-gray-400 text-sm">
-            © 2025 TomatoMaturityScan Tomat. All rights reserved.
+            © 2026 MaturityScanTomat. All rights reserved.
         </div>
     </footer>
 

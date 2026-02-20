@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hasil Klasifikasi - Tomato Maturity Scan</title>
+    <title>Hasil Klasifikasi - Maturity Scan Tomat</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -22,7 +22,7 @@
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <span class="text-2xl font-bold text-red-600">🍅 Tomato Maturity Scan</span>
+                        <span class="text-2xl font-bold text-red-600">MaturityScan Tomat</span>
                     </div>
                 </div>
                 <div class="hidden md:block">
@@ -116,7 +116,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center">
                 <p class="text-gray-400 text-sm">
-                    © 2025 TomatoMaturityScan Tomat. All rights reserved.
+                    © 2026 MaturityScanTomat. All rights reserved.
                 </p>
             </div>
         </div>
