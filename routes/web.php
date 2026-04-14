@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\TomatoController;
+use App\Http\Controllers\TomatController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -13,10 +15,26 @@ Route::get('/about', function () {
     return view('landing_page.about');
 })->name('about');
 
-// Upload routes
-Route::get('/upload', [UploadController::class, 'index'])->name('upload.index');
-Route::post('/upload', [UploadController::class, 'store'])->name('upload.store');
-Route::get('/upload/result', [UploadController::class, 'result'])->name('upload.result');
+// Tomat classification routes
+Route::prefix('tomat')->name('tomat.')->group(function () {
+    Route::get('/', [TomatController::class, 'index'])->name('upload');
+    Route::get('/upload', [TomatController::class, 'index'])->name('upload');
+    Route::post('/classify', [TomatController::class, 'classify'])->name('classify');
+    Route::get('/result', [TomatController::class, 'getResult'])->name('result');
+    Route::get('/service-status', [TomatController::class, 'checkService'])->name('service-status');
+    Route::get('/model-info', [TomatController::class, 'getModelInfo'])->name('model-info');
+    Route::get('/clear', [TomatoController::class, 'clear'])->name('clear');
+});
+
+// Legacy upload routes - redirect to new tomat routes
+Route::get('/upload', function() {
+    return redirect()->route('tomat.upload');
+})->name('upload.index');
+
+Route::post('/upload', [TomatoController::class, 'upload'])->name('upload.store');
+Route::get('/upload/result', function() {
+    return redirect()->route('tomat.result');
+})->name('upload.result');
 
 // Login route (redirect to admin login)
 Route::get('/login', function () {
@@ -62,7 +80,6 @@ Route::get('/admin/system-statistics', function () {
     return view('Admin.system-statistics');
 })->name('admin.system-statistics');
 
-
 Route::get('/admin/logout', function () {
     // Clear admin session
     session()->forget(['admin_logged_in', 'admin_user_id', 'admin_name']);
@@ -70,3 +87,9 @@ Route::get('/admin/logout', function () {
     // Redirect to login with success message
     return redirect()->route('admin.login')->with('success', 'Anda telah berhasil logout.');
 })->name('admin.logout');
+
+Route::get('/upload', function () {
+    return view('upload');
+});
+
+Route::post('/upload', [TomatoController::class, 'upload'])->name('upload');

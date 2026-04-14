@@ -28,7 +28,7 @@
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
                         <a href="#" class="text-gray-900 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Beranda</a>
-                        <a href="{{ route('about') }}"class="text-gray-500 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Tentang kami</a>
+                        <a href="{{ route('about') }}" class="text-gray-500 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Tentang kami</a>
                         <a href="{{ route('login') }}" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors">
                             Login
                         </a>
@@ -57,7 +57,7 @@
                         MaturityScan Tomat adalah aplikasi berbasis website yang membantu Anda menentukan tingkat kematangan tomat secara otomatis menggunakan analisis citra digital. Sistem memanfaatkan metode Color Histogram dan algoritma Random Forest untuk memberikan hasil klasifikasi yang cepat dan objektif.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <a href="{{ route('upload.index') }}" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 inline-block text-center">
+                        <a href="{{ route('tomat.upload') }}" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 inline-block text-center">
                            Mulai Klasifikasi
                         </a>
                         <a href="{{ route('about') }}" class="bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-8 rounded-lg shadow-md border border-gray-200 transition-all duration-200 inline-block text-center">
