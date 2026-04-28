@@ -11,6 +11,8 @@ return new class extends Migration
         Schema::create('uploads', function (Blueprint $table) {
             $table->id();
             $table->string('image_path');  // hasil upload user
+            $table->string('category');      // hasil: matang / mentah / setengah_matang
+            $table->float('confidence', 10, 2);     // nilai confidence (%)
             $table->timestamps();
         });
     }

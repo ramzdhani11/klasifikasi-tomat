@@ -280,13 +280,10 @@
                         </button>
                         
                         <div class="flex items-center space-x-3">
-                            <div class="text-right hidden md:block">
-                                <p class="text-sm font-medium text-gray-900">{{ Auth::user()->name ?? 'Admin User' }}</p>
-                                <p class="text-xs text-gray-500">Administrator</p>
-                            </div>
-                            <div class="w-10 h-10 bg-gradient-to-br from-red-400 to-pink-400 rounded-full flex items-center justify-center">
-                                <i class="fas fa-user text-white text-sm"></i>
-                            </div>
+                            <a href="{{ route('admin.logout') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-all">
+                                <i class="fas fa-sign-out-alt w-5"></i>
+                                <span>Logout</span>
+                            </a>
                         </div>
                     </div>
                 </div>

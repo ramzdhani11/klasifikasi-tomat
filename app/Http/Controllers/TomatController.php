@@ -4,22 +4,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+use App\Models\Upload;
+use App\Models\Predictions;
+use Intervention\Image\Facades\Image; // ✅ tambah ini
 
 class TomatController extends Controller
 {
     protected $apiUrl = 'http://127.0.0.1:5000/predict';
 
-    /**
-     * Show upload form
-     */
     public function index()
     {
         return view('tomat.upload');
     }
 
-    /**
-     * Handle image upload dan kirim ke Flask API
-     */
     public function classify(Request $request)
     {
         $request->validate([
@@ -29,8 +27,7 @@ class TomatController extends Controller
         try {
             $uploadedFile = $request->file('image');
 
-            // Kirim file langsung ke Flask tanpa resize ulang di sini
-            // Flask sudah handle resize 256x256 sendiri
+            // Kirim ke Flask (file original)
             $response = Http::timeout(30)
                 ->attach(
                     'image',
@@ -50,22 +47,58 @@ class TomatController extends Controller
                 return back()->with('error', 'Error dari API: ' . $errorMsg);
             }
 
+            // ✅ Kompress dan simpan gambar
+            $filename  = time() . '_' . uniqid() . '.jpg';
+            $savePath  = storage_path('app/public/uploads/' . $filename);
+
+            // Buat folder jika belum ada
+            if (!file_exists(storage_path('app/public/uploads'))) {
+                mkdir(storage_path('app/public/uploads'), 0755, true);
+            }
+
+            // Kompress gambar: resize max 800px, quality 75%
+            Image::make($uploadedFile->getRealPath())
+    ->resize(400, null, function ($constraint) {
+        $constraint->aspectRatio();
+        $constraint->upsize();
+    })
+    ->save($savePath, 60);
+
+            $imagePath = 'uploads/' . $filename;
+
+            // ✅ Simpan ke tabel uploads
+            $upload = Upload::create([
+                'image_path' => $imagePath,
+                'category'   => $result['prediction']['class'],
+                'confidence' => $result['prediction']['confidence_percentage'],
+            ]);
+
+            // ✅ Simpan ke tabel predictions
+            Predictions::create([
+                'upload_id'       => $upload->id,
+                'predicted_label' => $result['prediction']['class'],
+                'probability'     => $result['prediction']['confidence'],
+            ]);
+
             // Simpan hasil ke session
             session([
                 'prediction_result' => $result,
                 'processed_at'      => now(),
                 'original_size'     => $uploadedFile->getSize(),
+                'compressed_path'   => $imagePath,
             ]);
 
             return redirect()->route('tomat.result');
 
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
-            return back()->with('error', 'Tidak dapat terhubung ke API Flask. Pastikan server Python sudah berjalan (python app.py).');
+            return back()->with('error', 'Tidak dapat terhubung ke API Flask.');
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
+
+    // ... sisa method tidak berubah
     /**
      * Show prediction result
      */

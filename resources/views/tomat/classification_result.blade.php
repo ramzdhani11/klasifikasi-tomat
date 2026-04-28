@@ -51,7 +51,7 @@
                             @elseif($predictionClass == 'mentah')
                                 <div class="text-6xl mb-4">🟢</div>
                                 <span class="px-6 py-3 rounded-full text-white font-bold text-lg bg-yellow-500">Mentah</span>
-                            @else
+                            @elseif($predictionClass == 'setengah_matang')  
                                 <div class="text-6xl mb-4">🟡</div>
                                 <span class="px-6 py-3 rounded-full text-white font-bold text-lg bg-purple-500">Setengah Matang</span>
                             @endif
@@ -68,25 +68,7 @@
                             </div>
                         </div>
 
-                        <div class="mb-8">
-                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Probabilitas Setiap Kelas</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                @foreach($probabilities as $class => $prob)
-                                <div class="bg-gray-50 rounded-lg p-4 text-center">
-                                    <h4 class="font-semibold mb-2
-                                        @if($class == 'matang') text-green-600
-                                        @elseif($class == 'mentah') text-yellow-600
-                                        @else text-purple-600 @endif">
-                                        {{ ucfirst(str_replace('_', ' ', $class)) }}
-                                    </h4>
-                                    <div class="text-2xl font-bold mb-1">{{ number_format($prob['percentage'], 1) }}%</div>
-                                    <div class="text-sm text-gray-500">{{ number_format($prob['probability'], 4) }}</div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        <div class="bg-gray-50 rounded-xl p-6 mb-8 text-left">
+                        <div class="bg-gray-50 rounded-xl p-6 mb-8 text-left text-justify">
                             <h3 class="text-lg font-semibold text-gray-700 mb-4">Informasi Proses</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                 <div><strong>Model:</strong> {{ $metadata['model_type'] ?? 'RandomForest' }}</div>
@@ -100,10 +82,6 @@
                             <a href="{{ route('tomat.upload') }}"
                                class="inline-flex items-center bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition-all">
                                 <i class="fas fa-redo mr-2"></i> Upload Gambar Baru
-                            </a>
-                            <a href="{{ route('tomat.clear') }}"
-                               class="inline-flex items-center bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition-all">
-                                <i class="fas fa-trash mr-2"></i> Clear Result
                             </a>
                         </div>
                     </div>

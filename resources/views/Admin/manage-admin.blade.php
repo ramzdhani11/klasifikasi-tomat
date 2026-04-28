@@ -215,12 +215,11 @@
                 .then(data => {
                     document.getElementById('name').value = data.name;
                     document.getElementById('email').value = data.email;
-                    document.getElementById('role').value = data.role;
                     document.getElementById('password').removeAttribute('required');
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Gagal memuat data admin');
+                    alert('Gagal memuat data aadmin');
                 });
         } else {
             title.textContent = 'Tambah Admin';

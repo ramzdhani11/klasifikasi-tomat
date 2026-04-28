@@ -50,15 +50,6 @@
         </div>
     </div>
     
-    <!-- Logout Section -->
-    <div class="p-4 border-t border-gray-200">
-        <a href="{{ route('admin.logout') }}" 
-           class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-all">
-            <i class="fas fa-sign-out-alt w-5"></i>
-            <span>Logout</span>
-        </a>
-    </div>
-    
     <!-- Footer -->
     <div class="p-4 text-center text-xs text-gray-500 border-t border-gray-200">
         Made with <span class="text-red-500">❤️</span> by TomatoScan Team

@@ -9,28 +9,32 @@ use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
-    public function index()
+    private function checkAuth()
     {
         if (!session('admin_logged_in')) {
-            return redirect()->route('admin.login')->with('error', 'Silakan login terlebih dahulu.');
+            abort(403, 'Unauthorized');
         }
-        
-        // Ambil semua admin dengan role 'admin'
-        $admins = User::where('role', 'admin')->orderBy('created_at', 'desc')->get();
-        
+    }
+
+    public function index()
+    {
+        $this->checkAuth();
+
+        // Ambil hanya admin
+        $admins = User::where('role', 'admin')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('Admin.manage-admin', compact('admins'));
     }
 
     public function store(Request $request)
     {
-        if (!session('admin_logged_in')) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        $this->checkAuth();
 
-        // Validate input - role tidak termasuk, otomatis 'admin'
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email',
+            'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:8',
         ]);
 
@@ -38,110 +42,109 @@ class AdminController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Create admin dengan role selalu 'admin', tidak dari input
         $admin = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'admin',  // Role SELALU 'admin'
+            'role' => 'admin',
             'email_verified_at' => now()
         ]);
 
-        return response()->json(['success' => 'Admin berhasil ditambahkan', 'admin' => $admin]);
+        return response()->json([
+            'success' => 'Admin berhasil ditambahkan',
+            'admin' => $admin
+        ]);
     }
 
     public function edit($id)
     {
-        if (!session('admin_logged_in')) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        $this->checkAuth();
 
-        $admin = User::findOrFail($id);
+        $admin = User::where('id', $id)
+            ->where('role', 'admin')
+            ->firstOrFail();
+
         return response()->json($admin);
     }
 
     public function update(Request $request, $id)
     {
-        if (!session('admin_logged_in')) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        $this->checkAuth();
 
-        $admin = User::findOrFail($id);
-        
-        // Pastikan hanya admin yang dapat diupdate
-        if ($admin->role !== 'admin') {
-            return response()->json(['error' => 'Hanya admin yang dapat dikelola'], 422);
-        }
+        $admin = User::where('id', $id)
+            ->where('role', 'admin')
+            ->firstOrFail();
 
-        // Validate input - role tidak termasuk, tidak boleh diubah
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,'.$id,
+            'email' => 'required|email|max:255|unique:users,email,' . $id,
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Update hanya name dan email, role TIDAK boleh diubah
         $admin->update([
             'name' => $request->name,
             'email' => $request->email,
-            // Role selalu 'admin', tidak dapat diubah
         ]);
 
         if ($request->filled('password')) {
-            $admin->update(['password' => Hash::make($request->password)]);
+            $admin->update([
+                'password' => Hash::make($request->password)
+            ]);
         }
 
-        return response()->json(['success' => 'Admin berhasil diperbarui', 'admin' => $admin]);
+        return response()->json([
+            'success' => 'Admin berhasil diperbarui',
+            'admin' => $admin
+        ]);
     }
 
     public function destroy($id)
     {
-        if (!session('admin_logged_in')) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        $this->checkAuth();
 
-        $admin = User::findOrFail($id);
-        
-        // Pastikan hanya admin yang dihapus
-        if ($admin->role !== 'admin') {
-            return response()->json(['error' => 'Hanya admin yang dapat dihapus'], 422);
-        }
-        
-        // Prevent deleting the currently logged in admin
+        $admin = User::where('id', $id)
+            ->where('role', 'admin')
+            ->firstOrFail();
+
         if ($admin->id == session('admin_user_id')) {
-            return response()->json(['error' => 'Tidak dapat menghapus akun yang sedang digunakan'], 422);
+            return response()->json([
+                'error' => 'Tidak dapat menghapus akun yang sedang digunakan'
+            ], 422);
         }
 
         $admin->delete();
 
-        return response()->json(['success' => 'Admin berhasil dihapus']);
+        return response()->json([
+            'success' => 'Admin berhasil dihapus'
+        ]);
     }
 
     public function toggleStatus($id)
     {
-        if (!session('admin_logged_in')) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        $this->checkAuth();
 
-        $admin = User::findOrFail($id);
-        
-        // Prevent deactivating the currently logged in admin
+        $admin = User::where('id', $id)
+            ->where('role', 'admin')
+            ->firstOrFail();
+
         if ($admin->id == session('admin_user_id')) {
-            return response()->json(['error' => 'Tidak dapat menonaktifkan akun yang sedang digunakan'], 422);
+            return response()->json([
+                'error' => 'Tidak dapat menonaktifkan akun yang sedang digunakan'
+            ], 422);
         }
 
-        // For simplicity, we'll use email_verified_at as status indicator
-        if ($admin->email_verified_at) {
-            $admin->update(['email_verified_at' => null]);
-            $status = 'inactive';
-        } else {
-            $admin->update(['email_verified_at' => now()]);
-            $status = 'active';
-        }
+        $status = $admin->email_verified_at ? null : now();
 
-        return response()->json(['success' => "Status admin berhasil diubah menjadi $status", 'status' => $status]);
+        $admin->update([
+            'email_verified_at' => $status
+        ]);
+
+        return response()->json([
+            'success' => 'Status berhasil diubah',
+            'status' => $status ? 'active' : 'inactive'
+        ]);
     }
 }

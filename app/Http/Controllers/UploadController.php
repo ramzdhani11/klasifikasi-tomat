@@ -5,10 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use App\Models\Upload;
+use Intervention\Image\Facades\Image;
 
 class UploadController extends Controller
 {
+    protected $flaskApiUrl = 'http://127.0.0.1:5000/predict';
+
     /**
      * Display the upload page.
      *
@@ -20,7 +25,7 @@ class UploadController extends Controller
     }
 
     /**
-     * Handle the file upload.
+     * Handle the file upload and send to Flask API.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
@@ -54,132 +59,188 @@ class UploadController extends Controller
         try {
             $file = $request->file('tomato_image');
             
-            // Generate unique filename
             $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
-            
-            // Create directory if it doesn't exist
             $uploadPath = 'uploads/tomatoes';
+            
             if (!Storage::disk('public')->exists($uploadPath)) {
                 Storage::disk('public')->makeDirectory($uploadPath);
             }
             
-            // Store the file
-            $path = $file->storeAs($uploadPath, $filename, 'public');
+            // ✅ Ganti dengan ini (kompress sebelum simpan)
+$savePath = storage_path('app/public/' . $uploadPath . '/' . $filename);
+
+// Buat folder jika belum ada
+if (!file_exists(storage_path('app/public/' . $uploadPath))) {
+    mkdir(storage_path('app/public/' . $uploadPath), 0755, true);
+}
+
+// Kompress: resize max 800px, quality 75%
+Image::make($file->getRealPath())
+    ->resize(400, null, function ($constraint) {
+        $constraint->aspectRatio();
+        $constraint->upsize();
+    })
+    ->save($savePath, 60);
+
+$imagePath = $uploadPath . '/' . $filename;
             
-            // Simulate AI classification (replace with actual AI logic)
-            $classification = $this->classifyTomato($path);
+            $apiResponse = $this->sendToFlaskAPI($file);
             
-            // Redirect to result page with classification data
-            return redirect()->route('upload.result', [
-                'image' => $path,
-                'category' => $classification['category'],
-                'probability' => $classification['probability']
+            if (!$apiResponse['success']) {
+                return redirect()
+                    ->route('upload.index')
+                    ->withErrors(['error' => $apiResponse['error']])
+                    ->withInput();
+            }
+            
+            $upload = Upload::create([
+                'image_path' => $imagePath,
+                'category' => $apiResponse['category'],
+                'confidence' => $apiResponse['confidence'],
             ]);
+            
+            return redirect()->route('upload.result', ['id' => $upload->id])
+                ->with('success', 'Klasifikasi berhasil diproses.');
                 
         } catch (\Exception $e) {
             return redirect()
                 ->route('upload.index')
-                ->withErrors(['upload' => 'Terjadi kesalahan saat mengunggah file: ' . $e->getMessage()])
+                ->withErrors(['error' => 'Terjadi kesalahan saat mengunggah file: ' . $e->getMessage()])
                 ->withInput();
         }
     }
 
     /**
-     * Display the classification result.
+     * Send image to Flask API for classification with retry mechanism.
+     *
+     * @param  \Illuminate\Http\UploadedFile  $file
+     * @return array
+     */
+    private function sendToFlaskAPI($file)
+    {
+        $maxRetries = 2;
+        $retryDelay = 1000; // milliseconds
+
+        for ($attempt = 1; $attempt <= $maxRetries + 1; $attempt++) {
+            try {
+                $response = Http::timeout(30)
+                    ->attach(
+                        'image',
+                        file_get_contents($file->getRealPath()),
+                        $file->getClientOriginalName()
+                    )
+                    ->post($this->flaskApiUrl);
+
+                if ($response->failed()) {
+                    if ($attempt < $maxRetries + 1) {
+                        usleep($retryDelay * 1000);
+                        continue;
+                    }
+                    return [
+                        'success' => false,
+                        'error' => 'Gagal menghubungi API klasifikasi. Status: ' . $response->status()
+                    ];
+                }
+
+                $result = $response->json();
+
+                // Validate API response structure
+                if (!isset($result['success'])) {
+                    return [
+                        'success' => false,
+                        'error' => 'Format response API tidak valid'
+                    ];
+                }
+
+                if (!$result['success']) {
+                    $errorMsg = $result['message'] ?? 'Prediksi gagal';
+                    return [
+                        'success' => false,
+                        'error' => 'Error dari API: ' . $errorMsg
+                    ];
+                }
+
+                // Validate prediction structure
+                if (!isset($result['prediction']['class']) || !isset($result['prediction']['confidence_percentage'])) {
+                    return [
+                        'success' => false,
+                        'error' => 'Format response API tidak valid'
+                    ];
+                }
+
+                // Extract and validate prediction data
+                $category = $result['prediction']['class'];
+                $confidence = round((float)$result['prediction']['confidence_percentage'], 2);
+
+                // Validate category
+                if (!in_array($category, ['matang', 'mentah', 'setengah_matang'])) {
+                    return [
+                        'success' => false,
+                        'error' => 'Kategori prediksi tidak valid'
+                    ];
+                }
+
+                return [
+                    'success' => true,
+                    'category' => $category,
+                    'confidence' => $confidence
+                ];
+
+            } catch (\Illuminate\Http\Client\ConnectionException $e) {
+                if ($attempt < $maxRetries + 1) {
+                    usleep($retryDelay * 1000);
+                    continue;
+                }
+                return [
+                    'success' => false,
+                    'error' => 'Tidak dapat terhubung ke API Flask. Pastikan server Python sudah berjalan.'
+                ];
+            } catch (\Exception $e) {
+                if ($attempt < $maxRetries + 1) {
+                    usleep($retryDelay * 1000);
+                    continue;
+                }
+                return [
+                    'success' => false,
+                    'error' => 'Terjadi kesalahan saat memproses prediksi.'
+                ];
+            }
+        }
+
+        return [
+            'success' => false,
+            'error' => 'Gagal memproses prediksi setelah beberapa percobaan.'
+        ];
+    }
+
+    /**
+     * Display the classification result from database.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\View\View
      */
     public function result(Request $request)
     {
-        // Get parameters from query string
-        $imagePath = $request->get('image');
-        $category = $request->get('category', 'matang');
-        $probability = (int) $request->get('probability', 85);
+        $uploadId = $request->route('id') ?? $request->query('id');
 
-        // Validate inputs
-        if (!$imagePath) {
-            return redirect()->route('upload.index')->withErrors(['error' => 'Tidak ada gambar yang dianalisis.']);
+        if (!$uploadId) {
+            return redirect()->route('upload.index')
+                ->withErrors(['error' => 'ID upload tidak valid.']);
         }
 
-        // Get color classes based on category
-        $colors = $this->getCategoryColors($category);
-        
-        // Get description based on category
-        $description = $this->getCategoryDescription($category, $probability);
+        $upload = Upload::find($uploadId);
+
+        if (!$upload) {
+            return redirect()->route('upload.index')
+                ->withErrors(['error' => 'Data klasifikasi tidak ditemukan.']);
+        }
 
         return view('result', [
-            'imagePath' => $imagePath,
-            'category' => $category,
-            'probability' => $probability,
-            'maturityColor' => $colors['badge'],
-            'progressColor' => $colors['progress'],
-            'description' => $description
+            'imagePath' => $upload->image_path,
+            'category' => $upload->category,
+            'confidence' => $upload->confidence,
+            'processedAt' => $upload->created_at
         ]);
-    }
-
-    /**
-     * Simulate tomato classification (replace with actual AI implementation).
-     *
-     * @param  string  $imagePath
-     * @return array
-     */
-    private function classifyTomato($imagePath)
-    {
-        // Simulate AI classification with random results
-        // In real implementation, this would call your AI model
-        $categories = ['mentah', 'setengah matang', 'matang'];
-        $category = $categories[array_rand($categories)];
-        $probability = rand(75, 98); // Random probability between 75-98%
-
-        return [
-            'category' => $category,
-            'probability' => $probability
-        ];
-    }
-
-    /**
-     * Get color classes based on maturity category.
-     *
-     * @param  string  $category
-     * @return array
-     */
-    private function getCategoryColors($category)
-    {
-        $colors = [
-            'mentah' => [
-                'badge' => 'bg-green-500',
-                'progress' => 'bg-green-500'
-            ],
-            'setengah matang' => [
-                'badge' => 'bg-yellow-500',
-                'progress' => 'bg-yellow-500'
-            ],
-            'matang' => [
-                'badge' => 'bg-red-500',
-                'progress' => 'bg-red-500'
-            ]
-        ];
-
-        return $colors[$category] ?? $colors['matang'];
-    }
-
-    /**
-     * Get description based on maturity category and probability.
-     *
-     * @param  string  $category
-     * @param  int  $probability
-     * @return string
-     */
-    private function getCategoryDescription($category, $probability)
-    {
-        $descriptions = [
-            'mentah' => "Tomat ini masih dalam tahap pertumbuhan awal dengan tingkat kematangan {$probability}%. Warna hijau menunjukkan bahwa tomat belum matang sempurna dan teksturnya masih keras. Direkomendasikan untuk menunggu beberapa hari agar tomat mencapai kematangan optimal.",
-            'setengah matang' => "Tomat ini dalam proses pematangan dengan tingkat kematangan {$probability}%. Perpaduan warna hijau dan merah menunjukkan tomat sedang transisi. Tekstur mulai melunak dan rasa mulai terasa. Ideal untuk penggunaan dalam salad atau masakan yang membutuhkan tomat sedikit masak.",
-            'matang' => "Tomat ini telah mencapai kematangan optimal dengan tingkat keyakinan {$probability}%. Warna merah cerah dan tekstur lembut menunjukkan tomat siap dikonsumsi. Kandungan nutrisi dan rasa manis alami telah mencapai puncaknya. Sempurna untuk dimakan langsung atau diolah dalam berbagai masakan."
-        ];
-
-        return $descriptions[$category] ?? $descriptions['matang'];
     }
 
     /**
@@ -215,9 +276,8 @@ class UploadController extends Controller
 
         // Query hanya admin dengan role 'admin'
         $user = \DB::table('users')
-            ->where('email', $email)
-            ->where('role', 'admin')  // Hanya admin yang dapat login
-            ->first();
+        ->where('email', $email)
+        ->first();
 
         // Verifikasi password dan pastikan role adalah 'admin'
         if ($user && \Hash::check($password, $user->password) && $user->role === 'admin') {

@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         // Hapus semua user dengan role 'user'
-        DB::table('users')->where('role', 'user')->delete();
+        // Skip karena tidak ada kolom role
         
         // Set default role admin untuk semua user yang tersisa
         DB::table('users')->update(['role' => 'admin']);
