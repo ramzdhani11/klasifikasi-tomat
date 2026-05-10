@@ -36,11 +36,26 @@ class TomatController extends Controller
                 )
                 ->post($this->apiUrl);
 
-            if ($response->failed()) {
-                return back()->with('error', 'Gagal menghubungi API klasifikasi. Status: ' . $response->status());
-            }
-
+        
             $result = $response->json();
+
+            // Jika gambar bukan tomat / confidence rendah
+if ($response->status() == 422) {
+
+    return back()->with(
+        'error',
+        $result['message'] ?? 'Gambar bukan tomat'
+    );
+}
+
+// Jika API benar-benar gagal
+if ($response->failed()) {
+
+    return back()->with(
+        'error',
+        'Gagal menghubungi API klasifikasi. Status: ' . $response->status()
+    );
+}
 
             if (!isset($result['success']) || !$result['success']) {
                 $errorMsg = $result['message'] ?? 'Prediksi gagal';

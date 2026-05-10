@@ -16,23 +16,38 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-white">
-    <!-- Navbar -->
-    <nav class="bg-white border-b border-gray-200">
-        <div class="max-w-5xl mx-auto px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-8">
-                    <div class="flex-shrink-0">
-                        <span class="text-xl font-bold text-red-600"> MaturityScan Tomat</span>
+ <!-- Navbar -->
+<nav class="bg-white border-b border-gray-200">
+    <div class="max-w-5xl mx-auto px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex items-center space-x-8">
+                <div class="flex-shrink-0">
+                    <div class="flex items-center space-x-2">
+                        <svg viewBox="0 0 100 100" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="62" r="32" fill="#e63946"/>
+                            <ellipse cx="40" cy="50" rx="10" ry="7" fill="white" fill-opacity="0.25"/>
+                            <path d="M50 32 Q49 24 47 16" fill="none" stroke="#2d6a4f" stroke-width="2.5" stroke-linecap="round"/>
+                            <path d="M49 28 Q32 18 30 6 Q42 14 50 28" fill="#52b788"/>
+                            <path d="M50 26 Q68 16 71 4 Q58 14 50 27" fill="#74c69d"/>
+                            <line x1="22" y1="58" x2="78" y2="58" stroke="white" stroke-width="1.5" stroke-opacity="0.5" stroke-dasharray="5,3"/>
+                            <line x1="22" y1="66" x2="78" y2="66" stroke="white" stroke-width="1" stroke-opacity="0.3" stroke-dasharray="5,3"/>
+                            <path d="M24 46 L24 40 L30 40" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-opacity="0.8"/>
+                            <path d="M76 46 L76 40 L70 40" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-opacity="0.8"/>
+                            <path d="M24 80 L24 86 L30 86" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-opacity="0.8"/>
+                            <path d="M76 80 L76 86 L70 86" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-opacity="0.8"/>
+                        </svg>
+                        <span class="text-xl font-bold text-red-600">Tomat<span class="text-green-700">Scan</span></span>
                     </div>
-                    <div class="hidden md:block">
-                        <div class="flex items-baseline space-x-6">
-                            <a href="/" class="text-gray-900 hover:text-red-600 px-3 py-2 text-sm font-medium transition-colors">Home</a>
-                        </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="flex items-baseline space-x-6">
+                        <a href="/" class="text-gray-900 hover:text-red-600 px-3 py-2 text-sm font-medium transition-colors">Home</a>
                     </div>
                 </div>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
 
     <!-- Main Content -->
     <main class="max-w-5xl mx-auto px-6 lg:px-8">
@@ -84,33 +99,6 @@
             </div>
         </section>
 
-        <!-- Section: Latar Belakang -->
-        <section class="py-24 bg-gray-50">
-            <div class="text-center space-y-8">
-                <h2 class="text-3xl lg:text-4xl font-bold text-red-600">
-                    Latar Belakang Pengembangan
-                </h2>
-                <div class="max-w-4xl mx-auto">
-                    <div class="bg-white rounded-2xl shadow-lg p-12 border border-gray-100">
-                        <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed text-justify md:text-left">
-                            <p class="mb-6">
-                                Indonesia sebagai negara agraris memiliki sektor pertanian yang sangat penting, termasuk komoditas hortikultura seperti tomat. Tingkat kematangan tomat berpengaruh langsung terhadap:
-                            </p>
-                            <ul class="list-disc list-inside space-y-2 ml-4 mb-6">
-                                <li>Kualitas produk</li>
-                                <li>Nilai gizi</li>
-                                <li>Daya tarik konsumen</li>
-                                <li>Nilai ekonomi</li>
-                            </ul>
-                            <p>
-                                Dengan memanfaatkan teknologi pengolahan citra digital dan machine learning, sistem ini dirancang untuk mendukung efisiensi dalam proses sortir dan penilaian mutu hasil panen.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- Section: Teknologi -->
         <section class="py-24">
             <div class="text-center space-y-8">
@@ -128,7 +116,7 @@
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-4">Pengolahan Citra Digital</h3>
                         <div class="text-gray-700 leading-relaxed space-y-3">
-                            <p>Ekstraksi Fitur Warna (Color Histogram RGB)</p>
+                            <p>Ekstraksi Fitur Warna Color Histogram (HSV)</p>
                             <p>Analisis karakteristik visual tomat</p>
                         </div>
                     </div>
@@ -246,7 +234,7 @@
         <div class="max-w-5xl mx-auto px-6 lg:px-8">
             <div class="text-center space-y-4">
                 <p class="text-sm text-gray-500">
-                    © 2026 MaturityScanTomat. All rights reserved.
+                    © 2026 TomatScan. All rights reserved.
                 </p>
             </div>
         </div>

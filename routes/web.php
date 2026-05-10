@@ -47,24 +47,27 @@ Route::get('/admin/login', function () {
 
 Route::post('/admin/login', [UploadController::class, 'adminLogin'])->name('admin.login.submit');
 
-// Admin dashboard route
-// ✅ Perbaikan
-Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-// Manage admin routes
-Route::get('/admin/manage-admin', [AdminController::class, 'index'])->name('admin.manage-admin');
-Route::post('/admin/manage-admin', [AdminController::class, 'store'])->name('admin.manage-admin.store');
-Route::get('/admin/manage-admin/{id}/edit', [AdminController::class, 'edit'])->name('admin.manage-admin.edit');
-Route::put('/admin/manage-admin/{id}', [AdminController::class, 'update'])->name('admin.manage-admin.update');
-Route::delete('/admin/manage-admin/{id}', [AdminController::class, 'destroy'])->name('admin.manage-admin.destroy');
-Route::patch('/admin/manage-admin/{id}/toggle-status', [AdminController::class, 'toggleStatus'])->name('admin.manage-admin.toggle-status');
+// Admin routes with middleware
+Route::middleware('admin.auth')->group(function () {
+    // Admin dashboard route
+    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    
+    // Manage admin routes
+    Route::get('/admin/manage-admin', [AdminController::class, 'index'])->name('admin.manage-admin');
+    Route::post('/admin/manage-admin', [AdminController::class, 'store'])->name('admin.manage-admin.store');
+    Route::get('/admin/manage-admin/{id}/edit', [AdminController::class, 'edit'])->name('admin.manage-admin.edit');
+    Route::put('/admin/manage-admin/{id}', [AdminController::class, 'update'])->name('admin.manage-admin.update');
+    Route::delete('/admin/manage-admin/{id}', [AdminController::class, 'destroy'])->name('admin.manage-admin.destroy');
+    Route::patch('/admin/manage-admin/{id}/toggle-status', [AdminController::class, 'toggleStatus'])->name('admin.manage-admin.toggle-status');
 
-// Classification history route
-Route::get('/admin/classification-history', [ClassificationHistoryController::class, 'index'])
-    ->name('admin.classification-history');
+    // Classification history route
+    Route::get('/admin/classification-history', [ClassificationHistoryController::class, 'index'])
+        ->name('admin.classification-history');
 
-// System statistics route
-Route::get('/admin/system-statistics', [StatistikController::class, 'index'])
-    ->name('admin.system-statistics'); // ← pastikan ada ->name() ini!
+    // System statistics route
+    Route::get('/admin/system-statistics', [StatistikController::class, 'index'])
+        ->name('admin.system-statistics');
+});
 
 Route::get('/admin/logout', function () {
     // Clear admin session

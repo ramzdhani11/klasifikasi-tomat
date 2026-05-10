@@ -1,0 +1,1141 @@
+================================================================================
+        FLOWCHART SISTEM KLASIFIKASI TOMAT - FORMAT TEXT/ASCII
+================================================================================
+
+Dibuat untuk: Dokumentasi Sistem Klasifikasi Tingkat Kematangan Tomat
+Tanggal: 2026-05-07
+Stack: Laravel 11 (PHP) + Flask (Python) + Random Forest ML
+
+
+═══════════════════════════════════════════════════════════════════════════════
+1. ALUR UTAMA SISTEM - QUICK VIEW
+═══════════════════════════════════════════════════════════════════════════════
+
+    ┌─────────────┐
+    │    USER     │
+    │  /ADMIN     │
+    └──────┬──────┘
+           │
+           │ (1) Akses Web
+           ▼
+    ┌─────────────────────────────┐
+    │  🌐 LARAVEL WEB INTERFACE   │
+    │    Frontend (Blade + JS)    │
+    └────────────┬────────────────┘
+                 │
+    ┌────────────┴────────────────┐
+    │                             │
+    ▼ (2) GET /tomat/upload       ▼ (2) POST /admin/login
+    
+    ┌────────────────────────┐   ┌──────────────────┐
+    │ Upload Gambar Form     │   │ Admin Dashboard  │
+    │ - Select Image         │   │ - Manage Admins  │
+    │ - Preview              │   │ - History        │
+    │ - Validasi             │   │ - Statistics     │
+    └────────────┬───────────┘   └──────────────────┘
+                 │
+                 │ (3) POST /tomat/classify
+                 │     + File Binary
+                 ▼
+    ┌──────────────────────────────┐
+    │  ⚙️ LARAVEL BACKEND          │
+    │  TomatController             │
+    │  - Receive upload            │
+    │  - Validasi file             │
+    │  - Parse to Python           │
+    └────────────┬─────────────────┘
+                 │
+                 │ (4) HTTP POST
+                 │     Multipart FormData
+                 ▼
+    ┌──────────────────────────────┐
+    │  🐍 FLASK PYTHON BACKEND     │
+    │  app.py - predict endpoint   │
+    │  - Receive file              │
+    │  - Preprocess image          │
+    │  - Extract features          │
+    │  - Run model                 │
+    └────────────┬─────────────────┘
+                 │
+                 │ (5) JSON Response
+                 │     {class, confidence}
+                 ▼
+    ┌──────────────────────────────┐
+    │  ⚙️ LARAVEL BACKEND          │
+    │  - Parse response            │
+    │  - Save to DB                │
+    │  - Format result             │
+    └────────────┬─────────────────┘
+                 │
+                 │ (6) JSON/View
+                 │
+    ┌────────────┴────────────────┐
+    │                             │
+    ▼                             ▼
+    ┌──────────────────┐  ┌────────────────────┐
+    │ Result Page      │  │ AJAX Update DOM    │
+    │ - Show Result    │  │ - Display Class    │
+    │ - Confidence %   │  │ - Show Confidence  │
+    │ - Advice         │  │ - Save to History  │
+    └──────────────────┘  └────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+2. DETAILED FLOW: IMAGE UPLOAD & CLASSIFICATION
+═══════════════════════════════════════════════════════════════════════════════
+
+START: USER UPLOADS IMAGE
+│
+├─ Step 1: FILE INPUT VALIDATION (Browser Side)
+│  ├─ User selects file
+│  ├─ Check: .png, .jpg, .jpeg, .gif?
+│  │  └─ NO  → Show error "Invalid format"
+│  │  └─ YES → Continue
+│  ├─ Check: File size ≤ 16MB?
+│  │  └─ NO  → Show error "File too large"
+│  │  └─ YES → Continue
+│  └─ Preview image on page
+│
+├─ Step 2: SEND TO LARAVEL (JavaScript AJAX)
+│  ├─ FormData construction:
+│  │  ├─ file: binary data
+│  │  └─ csrf_token: security
+│  ├─ POST /tomat/classify
+│  └─ Show loading spinner
+│
+├─ Step 3: LARAVEL BACKEND PROCESSING
+│  ├─ TomatController@classify
+│  ├─ Receive multipart form data
+│  ├─ File validation:
+│  │  ├─ Check MIME type
+│  │  ├─ Check file size (server-side)
+│  │  └─ Check file integrity
+│  ├─ Temporary save:
+│  │  └─ storage/app/uploads/temp_[timestamp].jpg
+│  ├─ Prepare request body:
+│  │  ├─ Read file bytes
+│  │  ├─ Encode to multipart
+│  │  └─ Set headers
+│  └─ Send to Python backend
+│
+├─ Step 4: PYTHON FLASK BACKEND
+│  ├─ app.py route /api/predict (POST)
+│  ├─ Parse multipart request:
+│  │  ├─ Extract file object from request.files
+│  │  ├─ Check file existence
+│  │  └─ Check allowed extension
+│  ├─ Load model (if not in memory):
+│  │  ├─ joblib.load("model_tomat.pkl")
+│  │  ├─ Check file exists → NO? Error 500
+│  │  └─ Cache model in global variable
+│  └─ Call preprocessing function
+│
+├─ Step 5: IMAGE PREPROCESSING
+│  ├─ File stream to OpenCV:
+│  │  ├─ Read bytes from file stream
+│  │  ├─ cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+│  │  ├─ Output: BGR array
+│  │  └─ Check decoded? → NO? Error 500
+│  ├─ Image dimension check:
+│  │  ├─ Get height, width = image.shape[:2]
+│  │  ├─ If h×w ≠ 256×256:
+│  │  │  └─ cv2.resize(image, (256, 256))
+│  │  └─ Else: Use as-is
+│  └─ Output: Standardized 256×256×3 BGR image
+│
+├─ Step 6: FEATURE EXTRACTION (Color Histogram HSV)
+│  ├─ Color space conversion:
+│  │  ├─ cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+│  │  └─ Output: HSV image
+│  ├─ Histogram extraction:
+│  │  ├─ For channel H (Hue):
+│  │  │  ├─ cv2.calcHist([hsv], [0], None, [8], [0, 256])
+│  │  │  ├─ cv2.normalize(hist)
+│  │  │  └─ Result: array of 8 values
+│  │  ├─ For channel S (Saturation):
+│  │  │  ├─ cv2.calcHist([hsv], [1], None, [8], [0, 256])
+│  │  │  ├─ cv2.normalize(hist)
+│  │  │  └─ Result: array of 8 values
+│  │  └─ For channel V (Value):
+│  │     ├─ cv2.calcHist([hsv], [2], None, [8], [0, 256])
+│  │     ├─ cv2.normalize(hist)
+│  │     └─ Result: array of 8 values
+│  ├─ Concatenate all histograms:
+│  │  └─ [8] + [8] + [8] = [24 bins] × 3 = 192 features
+│  └─ Feature vector ready: shape (1, 192)
+│
+├─ Step 7: MODEL PREDICTION
+│  ├─ Load cached Random Forest model
+│  ├─ Run prediction:
+│  │  ├─ model.predict([features])
+│  │  │  └─ Returns: class index (0, 1, or 2)
+│  │  └─ model.predict_proba([features])
+│  │     └─ Returns: [[prob_0, prob_1, prob_2]]
+│  ├─ Decode class index:
+│  │  ├─ label_encoder.inverse_transform([predicted_index])
+│  │  ├─ 0 → "mentah"
+│  │  ├─ 1 → "matang"
+│  │  └─ 2 → "setengah_matang"
+│  ├─ Extract confidence:
+│  │  ├─ max(probabilities) × 100
+│  │  └─ Example: 0.8734 → 87.34%
+│  └─ Prepare results
+│
+├─ Step 8: PACKAGE & RETURN RESPONSE
+│  ├─ Format JSON response:
+│  │  {
+│  │    "status": "success",
+│  │    "class": "matang",
+│  │    "confidence": 87.34,
+│  │    "probabilities": {
+│  │      "matang": 87.34,
+│  │      "mentah": 5.12,
+│  │      "setengah_matang": 7.54
+│  │    },
+│  │    "timestamp": "2026-05-07T10:30:45Z"
+│  │  }
+│  ├─ Set HTTP status: 200 OK
+│  └─ Return to Laravel
+│
+├─ Step 9: LARAVEL SAVE TO DATABASE
+│  ├─ Receive JSON response from Python
+│  ├─ Parse JSON payload
+│  ├─ Save prediction record:
+│  │  {
+│  │    "user_id": (admin_user_id or guest),
+│  │    "image_filename": "upload_[timestamp].jpg",
+│  │    "predicted_class": "matang",
+│  │    "confidence_score": 0.8734,
+│  │    "created_at": now(),
+│  │    "updated_at": now()
+│  │  }
+│  ├─ Database insert:
+│  │  └─ INSERT INTO predictions (...)
+│  ├─ Get inserted ID
+│  └─ Prepare response
+│
+├─ Step 10: RETURN TO FRONTEND
+│  ├─ AJAX response received
+│  ├─ JavaScript update DOM:
+│  │  ├─ Hide loading spinner
+│  │  ├─ Show result card:
+│  │  │  ├─ Display image thumbnail
+│  │  │  ├─ Show class: "MATANG ✓"
+│  │  │  ├─ Show confidence: "87.34%"
+│  │  │  ├─ Show all probabilities
+│  │  │  └─ Show timestamp
+│  │  ├─ Add to history list
+│  │  └─ Enable action buttons:
+│  │     ├─ Save to folder
+│  │     ├─ Download report
+│  │     └─ View history
+│  └─ Display complete
+│
+└─ END: USER SEES RESULT
+
+
+═══════════════════════════════════════════════════════════════════════════════
+3. ADMIN AUTHENTICATION FLOW
+═══════════════════════════════════════════════════════════════════════════════
+
+START: ADMIN LOGIN PAGE
+│
+├─ Step 1: DISPLAY LOGIN FORM
+│  ├─ GET /admin/login
+│  ├─ Show form:
+│  │  ├─ Email/Username field
+│  │  ├─ Password field
+│  │  └─ Login button
+│  └─ Display any error messages
+│
+├─ Step 2: SUBMIT CREDENTIALS
+│  ├─ User enters:
+│  │  ├─ Email/Username
+│  │  └─ Password
+│  ├─ POST /admin/login
+│  └─ Send via HTTPS
+│
+├─ Step 3: LARAVEL BACKEND VERIFICATION
+│  ├─ UploadController@adminLogin
+│  ├─ Validate input:
+│  │  ├─ Email required? ✓
+│  │  ├─ Password required? ✓
+│  │  └─ Format valid? ✓
+│  ├─ Query database:
+│  │  ├─ SELECT * FROM users WHERE email = ?
+│  │  └─ User found? 
+│  │     ├─ NO  → Return error "Invalid credentials"
+│  │     └─ YES → Continue
+│  ├─ Verify password:
+│  │  ├─ Hash verification: Hash::check(input_pass, db_pass)
+│  │  ├─ Match?
+│  │  │  ├─ NO  → Return error "Invalid credentials"
+│  │  │  └─ YES → Continue
+│  ├─ Check user status:
+│  │  ├─ User.status = "active"?
+│  │  │  ├─ NO  → Return error "Account inactive"
+│  │  │  └─ YES → Continue
+│  ├─ Check admin flag:
+│  │  ├─ User.is_admin = true?
+│  │  │  ├─ NO  → Return error "Not admin account"
+│  │  │  └─ YES → Continue
+│  └─ Create session
+│
+├─ Step 4: CREATE SESSION
+│  ├─ Laravel Session Handler:
+│  │  ├─ session()->put([
+│  │  │    'admin_logged_in' => true,
+│  │  │    'admin_user_id' => user.id,
+│  │  │    'admin_name' => user.name,
+│  │  │    'admin_email' => user.email
+│  │  │  ])
+│  │  └─ Session saved to storage
+│  ├─ Set secure cookie:
+│  │  ├─ HttpOnly: true
+│  │  ├─ Secure: true (HTTPS)
+│  │  └─ SameSite: Strict
+│  └─ Session created
+│
+├─ Step 5: REDIRECT TO DASHBOARD
+│  ├─ HTTP redirect (302)
+│  ├─ Location: /admin/dashboard
+│  └─ Browser follows redirect
+│
+├─ Step 6: DISPLAY ADMIN DASHBOARD
+│  ├─ GET /admin/dashboard
+│  ├─ Check session:
+│  │  ├─ admin_logged_in = true? ✓
+│  │  └─ Allowed access
+│  ├─ Render dashboard with:
+│  │  ├─ Welcome message
+│  │  ├─ Statistics cards
+│  │  ├─ Navigation menu
+│  │  └─ Content sections
+│  └─ Display complete
+│
+├─ LOGOUT FLOW:
+│  ├─ GET /admin/logout
+│  ├─ Clear session:
+│  │  └─ session()->forget(['admin_logged_in', 'admin_user_id', ...])
+│  ├─ Delete cookies
+│  ├─ Redirect to /admin/login
+│  └─ Show "Logged out" message
+│
+└─ END
+
+
+═══════════════════════════════════════════════════════════════════════════════
+4. ADMIN DASHBOARD FEATURES
+═══════════════════════════════════════════════════════════════════════════════
+
+ADMIN DASHBOARD
+│
+├─ Dashboard Overview
+│  ├─ Statistics Cards:
+│  │  ├─ Total Predictions (Today)
+│  │  ├─ Total Predictions (All time)
+│  │  ├─ Accuracy Rate
+│  │  ├─ Active Admins
+│  │  └─ Storage Used
+│  ├─ Charts:
+│  │  ├─ Prediction trend (last 7 days)
+│  │  ├─ Class distribution pie chart
+│  │  └─ Confidence distribution histogram
+│  └─ Quick actions buttons
+│
+├─ Classification History
+│  ├─ Display table:
+│  │  ├─ Columns:
+│  │  │  ├─ ID
+│  │  │  ├─ Date/Time
+│  │  │  ├─ Image filename
+│  │  │  ├─ Predicted class
+│  │  │  ├─ Confidence %
+│  │  │  └─ User/Admin
+│  │  ├─ Pagination (50 per page)
+│  │  ├─ Sort options
+│  │  └─ Export to CSV
+│  ├─ Filter:
+│  │  ├─ By date range
+│  │  ├─ By class
+│  │  ├─ By confidence range
+│  │  └─ By user
+│  └─ Search function
+│
+├─ System Statistics
+│  ├─ Charts & Graphs:
+│  │  ├─ Class distribution (bar chart)
+│  │  ├─ Confidence score distribution
+│  │  ├─ Predictions over time (line chart)
+│  │  ├─ Accuracy metrics
+│  │  └─ Performance graph
+│  ├─ Export reports:
+│  │  ├─ PDF report
+│  │  ├─ Excel export
+│  │  └─ CSV export
+│  └─ Comparison view
+│
+├─ Manage Admin Users
+│  ├─ Admin list table:
+│  │  ├─ Columns:
+│  │  │  ├─ Name
+│  │  │  ├─ Email
+│  │  │  ├─ Status (active/inactive)
+│  │  │  ├─ Last login
+│  │  │  └─ Actions (Edit/Delete)
+│  │  └─ Pagination
+│  ├─ Add new admin:
+│  │  ├─ Form with:
+│  │  │  ├─ Name input
+│  │  │  ├─ Email input
+│  │  │  ├─ Password field
+│  │  │  ├─ Role selection
+│  │  │  └─ Status toggle
+│  │  └─ Validation & save
+│  ├─ Edit admin:
+│  │  ├─ Form with current data
+│  │  ├─ Update allowed fields
+│  │  └─ Password optional
+│  ├─ Delete admin:
+│  │  ├─ Confirmation dialog
+│  │  ├─ Cascade options
+│  │  └─ Soft/Hard delete
+│  └─ Toggle status (active/inactive)
+│
+├─ Model Information
+│  ├─ Display model details:
+│  │  ├─ Model type: Random Forest Classifier
+│  │  ├─ Number of trees: X
+│  │  ├─ Features count: 192
+│  │  ├─ Classes: [matang, mentah, setengah_matang]
+│  │  ├─ Training samples: X
+│  │  ├─ Model accuracy: XX.XX%
+│  │  ├─ Last updated: YYYY-MM-DD HH:MM:SS
+│  │  └─ Model file size
+│  ├─ Feature explanation:
+│  │  └─ HSV Color Histogram (8×8×8 bins)
+│  ├─ Model performance:
+│  │  ├─ Precision per class
+│  │  ├─ Recall per class
+│  │  ├─ F1-score per class
+│  │  └─ Confusion matrix
+│  └─ Retrain model button
+│
+├─ System Status
+│  ├─ Service health:
+│  │  ├─ Flask API: Online/Offline
+│  │  ├─ Database: Connected/Disconnected
+│  │  ├─ Storage: Available/Full
+│  │  └─ Cache: Working/Error
+│  ├─ Resource usage:
+│  │  ├─ CPU usage
+│  │  ├─ Memory usage
+│  │  ├─ Disk space
+│  │  └─ Active processes
+│  ├─ Recent logs:
+│  │  ├─ System errors
+│  │  ├─ API errors
+│  │  └─ Database errors
+│  └─ Maintenance actions
+│
+├─ Settings
+│  ├─ General settings:
+│  │  ├─ App name
+│  │  ├─ App description
+│  │  └─ Contact email
+│  ├─ Model settings:
+│  │  ├─ Model path
+│  │  ├─ Confidence threshold
+│  │  └─ Max upload size
+│  ├─ Storage settings:
+│  │  ├─ Dataset folder paths
+│  │  ├─ Upload folder path
+│  │  └─ Cleanup old files
+│  └─ Notification settings
+│
+└─ Logout
+   └─ Clear session & redirect
+
+
+═══════════════════════════════════════════════════════════════════════════════
+5. MODEL TRAINING FLOW (background process)
+═══════════════════════════════════════════════════════════════════════════════
+
+START: python create_model.py
+│
+├─ Phase 1: DATA LOADING
+│  ├─ Scan dataset folders:
+│  │  ├─ matang/
+│  │  ├─ mentah/
+│  │  └─ setengah_matang/
+│  ├─ Count images:
+│  │  ├─ matang: N1 images
+│  │  ├─ mentah: N2 images
+│  │  └─ setengah_matang: N3 images
+│  └─ Print statistics
+│
+├─ Phase 2: FEATURE EXTRACTION
+│  ├─ For each image in dataset:
+│  │  ├─ Read image with cv2.imread()
+│  │  ├─ Resize to 256×256 (if needed)
+│  │  ├─ Convert BGR → HSV
+│  │  ├─ Extract 192-dim feature vector:
+│  │  │  └─ 8×8×8 histogram (Hue, Saturation, Value)
+│  │  ├─ Store feature + label
+│  │  └─ Progress indicator
+│  ├─ Combine all features:
+│  │  └─ X shape: (N_total, 192)
+│  │  └─ y shape: (N_total,) with labels
+│  └─ Feature matrix ready
+│
+├─ Phase 3: DATA SPLITTING
+│  ├─ Train-test split:
+│  │  ├─ train_size: 0.8 (80%)
+│  │  ├─ test_size: 0.2 (20%)
+│  │  ├─ random_state: fixed (reproducible)
+│  │  └─ stratify: by class (balanced split)
+│  ├─ Output:
+│  │  ├─ X_train, X_test
+│  │  ├─ y_train, y_test
+│  │  └─ Split info printed
+│  └─ Ready for training
+│
+├─ Phase 4: MODEL TRAINING
+│  ├─ Initialize Random Forest:
+│  │  ├─ n_estimators: 100
+│  │  ├─ max_depth: None
+│  │  ├─ random_state: 42
+│  │  ├─ n_jobs: -1 (parallel)
+│  │  └─ class_weight: 'balanced'
+│  ├─ Fit model:
+│  │  ├─ clf.fit(X_train, y_train)
+│  │  ├─ Training time: X seconds
+│  │  └─ Print status
+│  └─ Model trained
+│
+├─ Phase 5: MODEL EVALUATION
+│  ├─ Make predictions:
+│  │  ├─ y_pred = clf.predict(X_test)
+│  │  └─ y_pred_proba = clf.predict_proba(X_test)
+│  ├─ Calculate metrics:
+│  │  ├─ Overall accuracy: XX.XX%
+│  │  ├─ Per-class precision
+│  │  ├─ Per-class recall
+│  │  ├─ Per-class F1-score
+│  │  ├─ Confusion matrix
+│  │  └─ Classification report
+│  ├─ Print results:
+│  │  ├─ Accuracy: XX.XX%
+│  │  ├─ Precision: XX.XX%
+│  │  ├─ Recall: XX.XX%
+│  │  └─ F1-Score: XX.XX%
+│  └─ Generate confusion matrix plot
+│
+├─ Phase 6: LABEL ENCODING
+│  ├─ Encode class labels:
+│  │  ├─ LabelEncoder().fit(y)
+│  │  ├─ Mapping:
+│  │  │  ├─ "matang" → 1
+│  │  │  ├─ "mentah" → 0
+│  │  │  └─ "setengah_matang" → 2
+│  │  └─ Save encoder for later use
+│  └─ Encoder ready
+│
+├─ Phase 7: SAVE MODEL ARTIFACTS
+│  ├─ Save trained model:
+│  │  ├─ joblib.dump(clf, "model_tomat.pkl")
+│  │  └─ File size: ~X MB
+│  ├─ Save label encoder:
+│  │  ├─ joblib.dump(le, "model_tomat_encoder.pkl")
+│  │  └─ File size: ~X KB
+│  ├─ Save metadata:
+│  │  ├─ joblib.dump(metadata, "model_tomat_metadata.pkl")
+│  │  ├─ Contains:
+│  │  │  ├─ Model type
+│  │  │  ├─ Classes list
+│  │  │  ├─ Features count
+│  │  │  └─ Training date
+│  │  └─ File size: ~X KB
+│  ├─ Print success messages
+│  └─ Model artifacts ready
+│
+├─ Phase 8: GENERATE VISUALIZATIONS
+│  ├─ Create confusion matrix plot:
+│  │  ├─ Heatmap with annotations
+│  │  ├─ Class names on axes
+│  │  ├─ Color scale
+│  │  └─ Save as confusion_matrix.png
+│  ├─ Create feature importance plot:
+│  │  ├─ Top 20 important features
+│  │  ├─ Bar chart
+│  │  └─ Save as feature_importance.png
+│  └─ Create accuracy plot
+│
+└─ END: MODEL READY FOR PRODUCTION
+
+
+═══════════════════════════════════════════════════════════════════════════════
+6. DATABASE SCHEMA
+═══════════════════════════════════════════════════════════════════════════════
+
+TABLE: users
+├─ id (INT, PRIMARY KEY, AUTO_INCREMENT)
+├─ email (VARCHAR 255, UNIQUE)
+├─ username (VARCHAR 255)
+├─ password (VARCHAR 255) - hashed with bcrypt
+├─ name (VARCHAR 255)
+├─ role (ENUM: admin, user)
+├─ status (ENUM: active, inactive) - default: active
+├─ last_login (TIMESTAMP, nullable)
+├─ remember_token (VARCHAR 100, nullable)
+├─ created_at (TIMESTAMP)
+└─ updated_at (TIMESTAMP)
+
+TABLE: predictions
+├─ id (INT, PRIMARY KEY, AUTO_INCREMENT)
+├─ user_id (INT, FOREIGN KEY → users.id, nullable)
+├─ image_filename (VARCHAR 255)
+├─ image_path (VARCHAR 255)
+├─ predicted_class (ENUM: matang, mentah, setengah_matang)
+├─ confidence_score (DECIMAL 5,4) - range 0.0000 to 1.0000
+├─ probabilities (JSON) - {matang: 0.87, mentah: 0.05, setengah_matang: 0.08}
+├─ model_version (VARCHAR 50)
+├─ notes (TEXT, nullable)
+├─ created_at (TIMESTAMP)
+└─ updated_at (TIMESTAMP)
+
+TABLE: uploads (legacy)
+├─ id (INT, PRIMARY KEY, AUTO_INCREMENT)
+├─ user_id (INT, FOREIGN KEY → users.id, nullable)
+├─ image_file (VARCHAR 255)
+├─ classification_result (VARCHAR 255)
+├─ confidence (DECIMAL 5,4, nullable)
+├─ created_at (TIMESTAMP)
+└─ updated_at (TIMESTAMP)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+7. FOLDER STRUCTURE & FILE ORGANIZATION
+═══════════════════════════════════════════════════════════════════════════════
+
+PROJECT ROOT (klasifikasi-tomat/)
+│
+├─ 📁 app/
+│  ├─ Http/
+│  │  └─ Controllers/
+│  │     ├─ TomatController.php (upload & classify logic)
+│  │     ├─ AdminController.php (manage admins)
+│  │     ├─ AdminDashboardController.php (dashboard)
+│  │     ├─ ClassificationHistoryController.php (history)
+│  │     ├─ StatistikController.php (statistics)
+│  │     └─ UploadController.php (legacy)
+│  ├─ Models/
+│  │  ├─ User.php
+│  │  ├─ Predictions.php
+│  │  ├─ Upload.php
+│  │  └─ ...
+│  ├─ Mail/ (email notifications)
+│  └─ Providers/
+│
+├─ 📁 routes/
+│  ├─ web.php (web routes)
+│  ├─ api.php (API routes - if separated)
+│  └─ console.php
+│
+├─ 📁 resources/
+│  ├─ css/ (stylesheets)
+│  ├─ js/ (JavaScript)
+│  └─ views/
+│     ├─ layouts/
+│     │  ├─ app.blade.php (main layout)
+│     │  └─ guest.blade.php (guest layout)
+│     ├─ Admin/
+│     │  ├─ dashboard.blade.php
+│     │  ├─ manage-admin.blade.php
+│     │  ├─ history.blade.php
+│     │  ├─ statistics.blade.php
+│     │  └─ login.blade.php
+│     ├─ upload.blade.php (upload form)
+│     ├─ result.blade.php (classification result)
+│     ├─ login.blade.php
+│     ├─ welcome.blade.php
+│     └─ landing_page/
+│
+├─ 📁 database/
+│  ├─ migrations/
+│  │  ├─ create_users_table.php
+│  │  ├─ create_predictions_table.php
+│  │  └─ ...
+│  ├─ seeders/
+│  └─ factories/
+│
+├─ 📁 storage/
+│  ├─ app/
+│  │  └─ uploads/ (uploaded images stored here)
+│  ├─ framework/
+│  ├─ logs/
+│  └─ cache/
+│
+├─ 📁 public/
+│  ├─ index.php (Laravel entry point)
+│  ├─ storage -> ../storage/app/public
+│  ├─ assets/ (images, icons)
+│  └─ build/ (compiled assets)
+│
+├─ 📁 dataset (Training data)
+│  ├─ matang/ (ripe tomatoes - ~N images)
+│  ├─ mentah/ (unripe tomatoes - ~N images)
+│  └─ setengah_matang/ (semi-ripe - ~N images)
+│
+├─ 🐍 Python ML Files
+│  ├─ app.py (Flask API server)
+│  ├─ main.py (training pipeline)
+│  ├─ model_manager.py (model loading/saving)
+│  ├─ create_model.py (data loading & training)
+│  ├─ predict_tomat.py (standalone predictor)
+│  ├─ model_tomat.pkl (trained Random Forest model)
+│  ├─ model_tomat_encoder.pkl (label encoder)
+│  ├─ model_tomat_metadata.pkl (model metadata)
+│  ├─ requirements.txt (Python dependencies)
+│  └─ [confusion_matrix.png, feature_importance.png]
+│
+├─ 📁 config/
+│  ├─ app.php
+│  ├─ database.php
+│  ├─ mail.php
+│  ├─ filesystems.php
+│  ├─ auth.php
+│  └─ ...
+│
+├─ 📁 bootstrap/
+│  ├─ app.php
+│  ├─ providers.php
+│  └─ cache/
+│
+├─ 📁 vendor/ (composer dependencies)
+├─ 📁 node_modules/ (npm dependencies)
+│
+├─ .env (environment variables)
+├─ .env.example
+├─ .gitignore
+├─ composer.json
+├─ package.json
+├─ vite.config.js
+├─ phpunit.xml
+├─ artisan (Laravel CLI)
+│
+├─ 📄 README.md (project documentation)
+├─ 📄 API_README.md
+├─ 📄 FLOWCHART_SISTEM_DETAIL.md (this file)
+└─ 📄 Other documentation files
+
+
+═══════════════════════════════════════════════════════════════════════════════
+8. REQUEST-RESPONSE FLOW DETAIL
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─ REQUEST SEQUENCE ─────────────────────────────────────────────────────────┐
+│                                                                              │
+│ (1) Browser                                                                  │
+│     POST /tomat/classify                                                     │
+│     Content-Type: multipart/form-data                                        │
+│     Body:                                                                    │
+│     ├─ file: <binary image data>                                           │
+│     └─ _token: <CSRF token>                                                 │
+│     ↓                                                                        │
+│ (2) Laravel Route Handler (routes/web.php)                                  │
+│     Route::post('/tomat/classify', [TomatController::class, 'classify'])   │
+│     ↓                                                                        │
+│ (3) TomatController@classify                                                │
+│     ├─ Receive file from request                                            │
+│     ├─ Validate file                                                        │
+│     ├─ Save temporarily                                                     │
+│     ├─ Prepare multipart request                                            │
+│     ↓                                                                        │
+│ (4) HTTP Client sends to Flask                                              │
+│     POST http://localhost:5000/api/predict                                  │
+│     Content-Type: multipart/form-data                                        │
+│     Body:                                                                    │
+│     └─ file: <binary image data>                                           │
+│     ↓                                                                        │
+│ (5) Flask App (app.py)                                                      │
+│     @app.route('/api/predict', methods=['POST'])                            │
+│     def predict():                                                           │
+│     ├─ Parse request.files['file']                                          │
+│     ├─ Validate file                                                        │
+│     ├─ Preprocess image                                                     │
+│     ├─ Extract features                                                     │
+│     ├─ Load model                                                           │
+│     ├─ Run prediction                                                       │
+│     └─ Return JSON response                                                 │
+│     ↓                                                                        │
+│ (6) Response sent back to Laravel                                           │
+│     {                                                                        │
+│       "status": "success",                                                  │
+│       "class": "matang",                                                    │
+│       "confidence": 0.8734,                                                 │
+│       "probabilities": {...},                                               │
+│       "timestamp": "2026-05-07T10:30:45Z"                                   │
+│     }                                                                        │
+│     ↓                                                                        │
+│ (7) TomatController processes response                                      │
+│     ├─ Parse JSON                                                           │
+│     ├─ Save to database                                                     │
+│     ├─ Format result for frontend                                           │
+│     └─ Return view/JSON to browser                                          │
+│     ↓                                                                        │
+│ (8) Browser receives response                                               │
+│     ├─ JavaScript processes JSON                                            │
+│     ├─ Update DOM                                                           │
+│     ├─ Display result card                                                  │
+│     └─ Show classification result to user                                   │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─ RESPONSE STRUCTURE ──────────────────────────────────────────────────────┐
+│                                                                            │
+│ HTTP 200 OK                                                               │
+│ Content-Type: application/json                                           │
+│                                                                            │
+│ {                                                                         │
+│   "status": "success",                                                   │
+│   "class": "matang",              ← Predicted class                       │
+│   "class_id": 1,                  ← Class numeric ID                      │
+│   "confidence": 0.8734,           ← Float 0-1                            │
+│   "confidence_percent": "87.34%", ← String format for display            │
+│   "probabilities": {                                                      │
+│     "matang": 0.8734,                                                    │
+│     "mentah": 0.0512,                                                    │
+│     "setengah_matang": 0.0754                                            │
+│   },                                                                      │
+│   "timestamp": "2026-05-07T10:30:45Z",                                  │
+│   "processing_time_ms": 542,                                             │
+│   "message": "Tomato successfully classified"                            │
+│ }                                                                         │
+│                                                                            │
+│ OR on ERROR:                                                              │
+│                                                                            │
+│ HTTP 400/500                                                              │
+│ {                                                                         │
+│   "status": "error",                                                     │
+│   "error_code": "INVALID_FILE",                                          │
+│   "message": "Uploaded file is not a valid image"                        │
+│ }                                                                         │
+│                                                                            │
+└────────────────────────────────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+9. ERROR HANDLING & VALIDATION
+═══════════════════════════════════════════════════════════════════════════════
+
+VALIDATION LAYERS:
+│
+├─ Browser-side (Client-side)
+│  ├─ File type check (extension)
+│  ├─ File size check (16MB max)
+│  └─ Immediate user feedback
+│
+├─ Laravel-side (Server-side)
+│  ├─ File validation:
+│  │  ├─ MIME type check
+│  │  ├─ File size double-check
+│  │  └─ File integrity
+│  ├─ Input validation:
+│  │  └─ CSRF token check
+│  ├─ Rate limiting
+│  └─ Error logging
+│
+└─ Flask-side (ML Backend)
+   ├─ File existence check
+   ├─ Image decode validation
+   ├─ Feature extraction validation
+   ├─ Model loading check
+   └─ Prediction success check
+
+
+ERROR CODES:
+│
+├─ 400 Bad Request
+│  ├─ NO_FILE_PROVIDED
+│  ├─ INVALID_FILE_TYPE
+│  ├─ FILE_TOO_LARGE
+│  ├─ CORRUPTED_IMAGE
+│  └─ INVALID_MIME_TYPE
+│
+├─ 401 Unauthorized
+│  ├─ NOT_AUTHENTICATED
+│  └─ SESSION_EXPIRED
+│
+├─ 403 Forbidden
+│  ├─ NOT_ADMIN
+│  └─ INSUFFICIENT_PERMISSIONS
+│
+├─ 404 Not Found
+│  ├─ ROUTE_NOT_FOUND
+│  └─ RESOURCE_NOT_FOUND
+│
+├─ 422 Unprocessable Entity
+│  ├─ VALIDATION_FAILED
+│  └─ INVALID_INPUT_DATA
+│
+├─ 500 Internal Server Error
+│  ├─ MODEL_NOT_FOUND
+│  ├─ FEATURE_EXTRACTION_FAILED
+│  ├─ PREDICTION_FAILED
+│  ├─ DATABASE_ERROR
+│  └─ SERVICE_UNAVAILABLE
+│
+└─ 503 Service Unavailable
+   ├─ FLASK_SERVICE_DOWN
+   └─ DATABASE_CONNECTION_FAILED
+
+
+═══════════════════════════════════════════════════════════════════════════════
+10. TECHNOLOGY STACK
+═══════════════════════════════════════════════════════════════════════════════
+
+FRONTEND
+├─ HTML5
+├─ CSS3 (+ Tailwind/Bootstrap)
+├─ JavaScript (Vanilla / Alpine.js)
+├─ Blade Templating Engine (Laravel)
+└─ AJAX (XMLHttpRequest / Fetch API)
+
+BACKEND - WEB
+├─ PHP 8.x
+├─ Laravel 11
+│  ├─ Routing
+│  ├─ Controllers
+│  ├─ Eloquent ORM
+│  ├─ Migrations
+│  ├─ Middleware
+│  └─ Session Management
+├─ Composer (dependency manager)
+└─ Apache/Nginx (web server)
+
+BACKEND - ML
+├─ Python 3.8+
+├─ Flask (lightweight web framework)
+├─ scikit-learn (ML library)
+│  └─ RandomForestClassifier
+├─ OpenCV (cv2) (image processing)
+├─ NumPy (numerical computing)
+├─ joblib (model serialization)
+└─ Gunicorn/uWSGI (WSGI server)
+
+DATABASE
+├─ MySQL / SQLite / PostgreSQL
+├─ Migrations (schema versioning)
+└─ Eloquent ORM (query builder)
+
+DEVELOPMENT TOOLS
+├─ Composer (PHP package manager)
+├─ npm (Node package manager)
+├─ Git (version control)
+├─ Vite (frontend build tool)
+└─ PHPUnit (testing framework)
+
+DEPLOYMENT
+├─ Apache or Nginx
+├─ PHP-FPM
+├─ Python runtime
+├─ Gunicorn/uWSGI
+├─ Supervisor (process management)
+└─ Docker (optional containerization)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+11. FILE PROCESSING & STORAGE FLOW
+═══════════════════════════════════════════════════════════════════════════════
+
+IMAGE UPLOAD & STORAGE:
+
+User Upload Image
+    ↓
+Frontend Validation (type, size)
+    ↓
+Send via AJAX to /tomat/classify
+    ↓
+Laravel Backend:
+├─ Receive multipart form data
+├─ Validate MIME type
+├─ Check file size
+├─ Generate unique filename:
+│  └─ "upload_" + timestamp + "_" + random_hash + ".jpg"
+├─ Store temporarily:
+│  └─ storage/app/uploads/temp_*.jpg
+└─ Prepare for Python request
+    ↓
+Send to Flask Backend
+    ↓
+Python Backend:
+├─ Receive file binary
+├─ Decode image (cv2.imdecode)
+├─ Validate image integrity
+└─ Process & extract features
+    ↓
+Get Prediction Result
+    ↓
+Laravel Backend:
+├─ Save prediction record to DB
+├─ Move image to permanent storage:
+│  └─ storage/app/uploads/
+├─ Optionally copy to class folder:
+│  └─ matang/ OR mentah/ OR setengah_matang/
+└─ Return result to frontend
+    ↓
+Frontend Display Result
+    ↓
+User sees:
+├─ Image thumbnail
+├─ Predicted class
+├─ Confidence percentage
+├─ All probabilities
+└─ Option to save/download
+
+
+═══════════════════════════════════════════════════════════════════════════════
+12. PERFORMANCE METRICS & OPTIMIZATION
+═══════════════════════════════════════════════════════════════════════════════
+
+TYPICAL RESPONSE TIMES:
+
+Image Upload & Transfer:         200-500ms
+  ├─ Network latency
+  ├─ File upload
+  └─ Laravel file handling
+
+Python Backend Processing:        300-600ms
+  ├─ Image decode:              10-20ms
+  ├─ Image resize (if needed):  30-50ms
+  ├─ HSV conversion:            20-30ms
+  ├─ Histogram extraction:      50-80ms
+  ├─ Model loading (first time): 200-400ms
+  │  └─ (cached after first use)
+  └─ Prediction:                20-50ms
+
+Database Operation:              50-150ms
+  └─ INSERT prediction record
+
+Response Render:                 100-200ms
+  └─ JavaScript processing & DOM update
+
+TOTAL TYPICAL TIME:              500-1200ms
+
+OPTIMIZATION STRATEGIES:
+├─ Load model once at Flask startup (cache in memory)
+├─ Use numpy vectorized operations
+├─ Resize images before feature extraction
+├─ Implement response caching
+├─ Use CDN for static assets
+├─ Minify CSS/JavaScript
+├─ Implement lazy loading
+├─ Use database indexing
+└─ Monitor slow queries
+
+
+═══════════════════════════════════════════════════════════════════════════════
+13. SECURITY CONSIDERATIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+AUTHENTICATION:
+├─ Password hashing (bcrypt in Laravel)
+├─ Session management (secure cookies)
+├─ CSRF token verification (Laravel middleware)
+├─ Admin role checking (before dashboard access)
+└─ Last login tracking
+
+AUTHORIZATION:
+├─ Route middleware to check admin status
+├─ Controller middleware for protected routes
+├─ Database-level foreign key constraints
+└─ User-to-prediction relationship validation
+
+FILE UPLOAD SECURITY:
+├─ File type validation (MIME type + extension)
+├─ File size limit (16MB max)
+├─ Filename sanitization
+├─ Store outside web root (when possible)
+├─ Prevent executable file uploads
+└─ Virus scanning (optional)
+
+API SECURITY:
+├─ HTTPS only (in production)
+├─ Rate limiting on /tomat/classify endpoint
+├─ Request validation
+├─ Input sanitization
+├─ Error message security (no stack traces to users)
+└─ CORS configuration (if needed)
+
+DATABASE SECURITY:
+├─ SQL injection prevention (Eloquent ORM uses parameterized queries)
+├─ Database user permissions (least privilege)
+├─ Password field hashing
+├─ Backup & restore procedures
+└─ Regular security audits
+
+ENVIRONMENT SECURITY:
+├─ .env file NOT in version control
+├─ Sensitive credentials in .env
+├─ Different keys for dev/prod environments
+├─ HTTPS enforcement
+└─ Security headers (HSTS, CSP, X-Frame-Options)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+14. FUTURE ENHANCEMENTS
+═══════════════════════════════════════════════════════════════════════════════
+
+FEATURE ENHANCEMENTS:
+├─ Real-time prediction confidence threshold adjustment
+├─ Batch processing for multiple images
+├─ Video processing capability
+├─ Model version management (A/B testing)
+├─ Custom model training by admin
+├─ Result export (PDF reports)
+├─ Email notifications
+└─ Mobile app integration
+
+PERFORMANCE:
+├─ Implement caching layer (Redis)
+├─ Async job processing (Laravel Jobs)
+├─ Image CDN integration
+├─ Database query optimization
+├─ API rate limiting configuration
+└─ Load balancing (multiple Flask instances)
+
+ML IMPROVEMENTS:
+├─ Implement additional features (texture, shape)
+├─ Ensemble models (combine multiple models)
+├─ Transfer learning (pre-trained models)
+├─ Real-time model retraining
+├─ Automated hyperparameter tuning
+└─ Model explainability (SHAP values)
+
+MONITORING:
+├─ Application performance monitoring (APM)
+├─ Error tracking (Sentry)
+├─ Logging aggregation (ELK stack)
+├─ Alerts for service failures
+├─ Dashboard metrics visualization
+└─ User analytics tracking
+
+DEPLOYMENT:
+├─ Docker containerization
+├─ Kubernetes orchestration
+├─ CI/CD pipeline (GitHub Actions / GitLab CI)
+├─ Automated testing
+├─ Blue-green deployment
+└─ Auto-scaling based on load
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+END OF FLOWCHART DOCUMENTATION
+
+For more details, see: FLOWCHART_SISTEM_DETAIL.md (Mermaid format)
+Generated: 2026-05-07
+
+═══════════════════════════════════════════════════════════════════════════════

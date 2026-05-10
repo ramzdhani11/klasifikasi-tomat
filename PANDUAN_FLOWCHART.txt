@@ -1,0 +1,436 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                 PANDUAN FLOWCHART SISTEM KLASIFIKASI TOMAT                  ║
+║                                                                              ║
+║            Tiga Format Dokumentasi untuk Kebutuhan Berbeda                  ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+📋 RINGKASAN SISTEM
+═══════════════════════════════════════════════════════════════════════════════
+
+Nama Sistem       : Sistem Klasifikasi Tingkat Kematangan Tomat
+Tujuan            : Mengklasifikasi tomat menjadi 3 kategori (matang, mentah, setengah matang)
+Teknologi Utama   : Laravel 11 (PHP) + Flask (Python) + Random Forest ML
+Total Fitur       : 192 (HSV Color Histogram 8×8×8)
+Akurasi Target    : >85%
+Response Time     : ~700-1200ms per prediksi
+
+
+📁 TIGA FILE FLOWCHART YANG TERSEDIA
+═══════════════════════════════════════════════════════════════════════════════
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ 1️⃣  FLOWCHART_SISTEM_DETAIL.md                                          │
+├──────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│ Format     : Mermaid Diagram (.md)                                     │
+│ Bisa render di : GitHub, VS Code (dengan extension), Mermaid.live      │
+│ Jumlah diagram : 14 flowchart berbeda                                  │
+│                                                                          │
+│ Isi Diagram :                                                           │
+│ ├─ 1. Alur Umum Sistem (HIGH LEVEL)                                   │
+│ ├─ 2. Alur Detail: Upload & Klasifikasi                                │
+│ ├─ 3. Alur Database & Storage                                          │
+│ ├─ 4. Alur Admin Dashboard                                             │
+│ ├─ 5. Alur Autentikasi Admin                                           │
+│ ├─ 6. Alur Model Training                                              │
+│ ├─ 7. Alur Request-Response API Python                                 │
+│ ├─ 8. Alur Layers Arsitektur                                           │
+│ ├─ 9. Alur Validasi & Error Handling                                   │
+│ ├─ 10. Alur Interaksi User-Sistem (Sequence Diagram)                   │
+│ ├─ 11. Alur Database Schema                                            │
+│ ├─ 12. Alur Cache & Performance                                        │
+│ ├─ 13. Alur Deployment & Setup                                         │
+│ └─ 14. Alur Fitur Ekstraksi (DETAIL TEKNIS)                            │
+│                                                                          │
+│ Keunggulan     :                                                        │
+│ • Visual interaktif (bisa hover di GitHub)                            │
+│ • Bisa di-copy dan di-modify                                          │
+│ • Syntax mudah dibaca                                                 │
+│ • Format standar industri                                             │
+│ • Support di berbagai platform                                        │
+│                                                                          │
+│ Keterbatasan   :                                                        │
+│ • Perlu renderer untuk lihat diagram visual                           │
+│ • Tidak bisa dibuka langsung di text editor biasa                     │
+│                                                                          │
+│ 💡 GUNAKAN UNTUK:                                                       │
+│    ✓ Presentasi ke tim                                                │
+│    ✓ Dokumentasi formal                                               │
+│    ✓ Sharing di GitHub/GitLab                                         │
+│    ✓ Editing dan customization diagram                                │
+│                                                                          │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ 2️⃣  FLOWCHART_SISTEM_TEXT_FORMAT.txt                                    │
+├──────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│ Format     : Plain Text dengan ASCII                                   │
+│ Bisa dibuka di : Notepad, VS Code, Vim, Sublime Text (semua editor)   │
+│ Jumlah bagian : 14 section berbeda                                     │
+│                                                                          │
+│ Isi Bagian :                                                            │
+│ ├─ 1. Alur Utama Sistem - QUICK VIEW                                   │
+│ ├─ 2. DETAILED FLOW: Image Upload & Classification                     │
+│ ├─ 3. Admin Authentication Flow                                        │
+│ ├─ 4. Admin Dashboard Features                                         │
+│ ├─ 5. Model Training Flow                                              │
+│ ├─ 6. Database Schema                                                  │
+│ ├─ 7. Folder Structure & File Organization                             │
+│ ├─ 8. Request-Response Flow Detail                                     │
+│ ├─ 9. Error Handling & Validation                                      │
+│ ├─ 10. Technology Stack                                                │
+│ ├─ 11. File Processing & Storage Flow                                  │
+│ ├─ 12. Performance Metrics & Optimization                              │
+│ ├─ 13. Security Considerations                                         │
+│ └─ 14. Future Enhancements                                             │
+│                                                                          │
+│ Keunggulan     :                                                        │
+│ • Bisa dibuka di editor text apapun                                   │
+│ • Tidak perlu internet untuk render                                   │
+│ • Mudah di-copy paste                                                │
+│ • Selalu tersedia dan reliable                                        │
+│ • Bisa ditambah notes langsung                                        │
+│ • Ideal untuk dokumentasi text file                                   │
+│                                                                          │
+│ Keterbatasan   :                                                        │
+│ • Hanya text, tidak visual diagram                                    │
+│ • Perlu membaca dengan teliti                                         │
+│                                                                          │
+│ 💡 GUNAKAN UNTUK:                                                       │
+│    ✓ Reference cepat di terminal/console                              │
+│    ✓ Dokumentasi archive                                              │
+│    ✓ Backup documentation                                             │
+│    ✓ Analisis detail alur sistem                                      │
+│    ✓ Ketika tidak bisa render visual                                  │
+│    ✓ Import ke dokumentasi wiki/knowledge base                        │
+│                                                                          │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ 3️⃣  FLOWCHART_ASCII_VISUAL.txt                                          │
+├──────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│ Format     : ASCII Art Diagrams                                        │
+│ Bisa dibuka di : Notepad, VS Code, Vim, Sublime Text (semua editor)   │
+│ Jumlah diagram : 12 visual diagram berbeda                             │
+│                                                                          │
+│ Isi Diagram :                                                           │
+│ ├─ 1. Complete System Architecture                                     │
+│ ├─ 2. Request-Response Cycle Timeline                                  │
+│ ├─ 3. Model Training Pipeline                                          │
+│ ├─ 4. Database Schema Visualization                                    │
+│ ├─ 5. Feature Extraction Detail - HSV Histogram                         │
+│ ├─ 6. Prediction Output Visualization                                  │
+│ ├─ 7. Error Handling Flowchart                                         │
+│ ├─ 8. System Deployment Architecture                                   │
+│ ├─ 9. Technology Stack Summary                                         │
+│ ├─ 10. Performance Metrics                                             │
+│ ├─ 11. Security Layers                                                 │
+│ └─ 12. Monitoring & Maintenance                                        │
+│                                                                          │
+│ Keunggulan     :                                                        │
+│ • Visual boxes & arrows dalam text                                    │
+│ • Bisa dibuka di editor text biasa                                    │
+│ • Lebih visual dari text format                                       │
+│ • Tidak perlu render external tools                                   │
+│ • Mudah dibaca di terminal                                            │
+│ • Good balance antara visual dan text                                 │
+│                                                                          │
+│ Keterbatasan   :                                                        │
+│ • Tidak interaktif seperti Mermaid                                    │
+│ • Diagram bisa berbeda di font berbeda                                │
+│                                                                          │
+│ 💡 GUNAKAN UNTUK:                                                       │
+│    ✓ Quick visualization tanpa renderer                               │
+│    ✓ Presentasi di terminal/console                                   │
+│    ✓ ASCII art yang menarik untuk dokumentasi                         │
+│    ✓ Tim yang lebih suka visual format                                │
+│    ✓ Export ke documentation tools                                    │
+│                                                                          │
+└──────────────────────────────────────────────────────────────────────────┘
+
+
+🎯 PANDUAN MEMILIH FORMAT
+═══════════════════════════════════════════════════════════════════════════════
+
+Situasi 1: PRESENTASI KE STAKEHOLDER / CLIENT
+┌────────────────────────────────────────────────────────────────────┐
+│ Rekomendasi : FLOWCHART_SISTEM_DETAIL.md (Mermaid)                │
+│                                                                    │
+│ Alasan :                                                           │
+│ ✓ Tampil profesional & menarik                                   │
+│ ✓ Bisa di-export ke PNG/SVG untuk slide PowerPoint              │
+│ ✓ Interaktif di GitHub                                          │
+│ ✓ Standard industri                                             │
+│                                                                    │
+│ Cara render :                                                     │
+│ • Upload ke GitHub → lihat langsung                            │
+│ • Kunjungi mermaid.live → copy-paste diagram                   │
+│ • VS Code + Mermaid extension → preview real-time              │
+└────────────────────────────────────────────────────────────────────┘
+
+Situasi 2: DEVELOPER ONBOARDING / TRAINING
+┌────────────────────────────────────────────────────────────────────┐
+│ Rekomendasi : FLOWCHART_SISTEM_TEXT_FORMAT.txt (Text + ASCII)      │
+│                                                                    │
+│ Alasan :                                                           │
+│ ✓ Detail explanation lengkap                                    │
+│ ✓ Bisa dibuka langsung tanpa tools                             │
+│ ✓ Mudah dibaca step-by-step                                    │
+│ ✓ Bisa dikopy ke dokumentasi internal                          │
+│                                                                    │
+│ Cara gunakan :                                                    │
+│ • Buka di VS Code dengan line numbers                         │
+│ • Bagikan ke tim untuk reference                              │
+│ • Import ke wiki/knowledge base                               │
+│ • Print untuk hardcopy documentation                          │
+└────────────────────────────────────────────────────────────────────┘
+
+Situasi 3: QUICK REFERENCE / TROUBLESHOOTING
+┌────────────────────────────────────────────────────────────────────┐
+│ Rekomendasi : FLOWCHART_ASCII_VISUAL.txt (Visual ASCII)            │
+│                                                                    │
+│ Alasan :                                                           │
+│ ✓ Bisa di-cat di terminal/console                              │
+│ ✓ Visual dan cepat dipahami                                    │
+│ ✓ Tidak perlu render atau internet                            │
+│ ✓ Ideal untuk saat debugging                                  │
+│                                                                    │
+│ Cara gunakan :                                                    │
+│ • cat FLOWCHART_ASCII_VISUAL.txt di terminal                  │
+│ • grep untuk search specific section                          │
+│ • Less untuk paging                                           │
+│ • Bookmarks di VS Code                                        │
+└────────────────────────────────────────────────────────────────────┘
+
+Situasi 4: ARCHIVE / BACKUP DOCUMENTATION
+┌────────────────────────────────────────────────────────────────────┐
+│ Rekomendasi : Semua tiga file                                      │
+│                                                                    │
+│ Alasan :                                                           │
+│ ✓ Redundancy - jika satu format corrupt, ada backup           │
+│ ✓ Different perspective - lihat dari angle berbeda             │
+│ ✓ Long-term preservation - text format paling reliable         │
+│                                                                    │
+│ Strategi :                                                        │
+│ • Version control di Git                                      │
+│ • Backup regular ke cloud storage                             │
+│ • Keep original Mermaid untuk editing                         │
+│ • Maintain text format untuk archive                          │
+└────────────────────────────────────────────────────────────────────┘
+
+
+📌 QUICK REFERENCE CHART
+═══════════════════════════════════════════════════════════════════════════════
+
+                    Format      | Render    | Editor  | Visual | Sharing | Size
+────────────────────────────────────────────────────────────────────────────────
+Mermaid (.md)       | Complex   | External  | Good   | ✓✓✓   | GitHub | Small
+Text Format (.txt)  | Simple    | Native    | Fair   | ✓     | Email  | Medium
+ASCII Visual (.txt) | Mixed     | Native    | ✓✓     | ✓✓    | Any    | Large
+
+
+🚀 BAGAIMANA MEMULAI
+═══════════════════════════════════════════════════════════════════════════════
+
+LANGKAH 1 - BACA OVERVIEW
+└─ Buka: FLOWCHART_ASCII_VISUAL.txt
+   Bagian: 1. Complete System Architecture
+   Tujuan: Pahami big picture sistem
+
+LANGKAH 2 - ANALISIS DETAIL ALUR
+└─ Buka: FLOWCHART_SISTEM_TEXT_FORMAT.txt
+   Bagian: 2. DETAILED FLOW: Image Upload & Classification
+   Tujuan: Pahami step-by-step prosesnya
+
+LANGKAH 3 - PRESENTASI VISUAL
+└─ Buka: FLOWCHART_SISTEM_DETAIL.md
+   Bagian: 1. Alur Umum Sistem atau 2. Alur Detail
+   Tujuan: Siap untuk presentasi
+
+LANGKAH 4 - DEEP DIVE TECHNICAL
+└─ Buka: FLOWCHART_SISTEM_TEXT_FORMAT.txt
+   Bagian: 14. Alur Fitur Ekstraksi (DETAIL TEKNIS)
+   Tujuan: Pahami implementasi teknis
+
+
+💻 CARA MEMBUKA & RENDER SETIAP FORMAT
+═══════════════════════════════════════════════════════════════════════════════
+
+1. MERMAID FORMAT (.md)
+   ───────────────────────────────────────────────────────────────────
+
+   Opsi A: Online Render (Recommended)
+   • Kunjungi: https://mermaid.live
+   • Copy-paste isi dari FLOWCHART_SISTEM_DETAIL.md
+   • Lihat diagram secara real-time
+   • Bisa export ke PNG
+
+   Opsi B: GitHub
+   • Push file .md ke repository
+   • GitHub automatic render Mermaid
+   • Lihat diagram di browser
+
+   Opsi C: VS Code Extension
+   • Install: "Markdown Preview Mermaid Support"
+   • Buka file .md di VS Code
+   • Klik preview button
+   • Lihat diagram di side panel
+
+   Opsi D: Local Tools
+   • Install: mermaid-cli
+   • Jalankan: mmdc -i FLOWCHART_SISTEM_DETAIL.md -o output.png
+   • Output PNG bisa di-share
+
+
+2. TEXT FORMAT (.txt)
+   ───────────────────────────────────────────────────────────────────
+
+   Opsi A: Text Editor (Simplest)
+   • Notepad, VS Code, Sublime
+   • Buka langsung file .txt
+   • Ctrl+F untuk search
+
+   Opsi B: Terminal
+   • cat FLOWCHART_SISTEM_TEXT_FORMAT.txt
+   • grep -n "section_name" untuk find
+   • less untuk pagination
+
+   Opsi C: Markdown Preview
+   • Rename .txt → .md (optional)
+   • Open di VS Code preview
+   • Better formatting
+
+
+3. ASCII VISUAL FORMAT (.txt)
+   ───────────────────────────────────────────────────────────────────
+
+   Opsi A: Terminal (Best for ASCII)
+   • cat FLOWCHART_ASCII_VISUAL.txt
+   • Lihat ASCII art dengan benar
+
+   Opsi B: Text Editor
+   • Open di VS Code dengan monospace font
+   • Recommended font: Courier New, Monospace
+   • ASCII akan terlihat sempurna
+
+   Opsi C: Print
+   • Print ke PDF (landscape mode)
+   • Better untuk hardcopy documentation
+
+
+🔍 MENCARI INFORMASI SPESIFIK
+═══════════════════════════════════════════════════════════════════════════════
+
+Pertanyaan : Jawab dengan file:         Section/Bagian:
+───────────────────────────────────────────────────────────────────────────────
+"Bagaimana alur upload?" → Mermaid (.md) → #2
+                        → Text (.txt)   → Section 2
+
+"Apa itu HSV histogram?" → Mermaid (.md) → #14
+                       → ASCII (.txt)  → #5
+                       → Text (.txt)   → Section 6
+
+"Bagaimana autentikasi?" → Mermaid (.md) → #5
+                        → Text (.txt)   → Section 3
+
+"Gimana database schema?" → Mermaid (.md) → #11
+                         → ASCII (.txt)  → #4
+                         → Text (.txt)   → Section 6
+
+"Tech stack apa?" → Mermaid (.md) → #8
+                 → ASCII (.txt)  → #9
+                 → Text (.txt)   → Section 10
+
+"Error handling?" → Mermaid (.md) → #9
+                 → ASCII (.txt)  → #7
+                 → Text (.txt)   → Section 9
+
+
+📞 FILE SUMMARY COMPARISON
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ PROPERTY            │ Mermaid .md        │ Text .txt      │ ASCII .txt      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ File Size           │ ~50-80 KB          │ ~100 KB        │ ~150 KB         │
+│ Number of Sections  │ 14 diagrams        │ 14 sections    │ 12 diagrams     │
+│ Total Lines         │ ~500 lines         │ ~1,500 lines   │ ~800 lines      │
+│ Render Method       │ External renderer  │ None (text)    │ None (ASCII)    │
+│ Portability         │ ★★★★★              │ ★★★★★          │ ★★★★★           │
+│ Readability         │ ★★★★★              │ ★★★☆☆          │ ★★★★☆           │
+│ Detail Level        │ Medium             │ Very High      │ High            │
+│ Best For            │ Presentations      │ Reference      │ Quick View      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ TOTAL DOCUMENTATION │ 50 KB              │ 100 KB         │ 150 KB          │
+│ ALL THREE FILES     │ = 300 KB total compressed documentation               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+✅ CHECKLIST KONTEN
+═══════════════════════════════════════════════════════════════════════════════
+
+Sistem Coverage:
+
+☑ Overview & Big Picture
+☑ Request-Response Flow
+☑ Image Upload Process
+☑ Feature Extraction (HSV Histogram)
+☑ Model Prediction
+☑ Database Operations
+☑ Admin Authentication
+☑ Admin Dashboard
+☑ Model Training Pipeline
+☑ Error Handling
+☑ Security Considerations
+☑ Performance Optimization
+☑ Deployment Architecture
+☑ Technology Stack
+☑ Future Enhancements
+☑ Monitoring & Maintenance
+
+
+🎓 LEARNING PATH
+═══════════════════════════════════════════════════════════════════════════════
+
+Untuk Pemula:
+1. Baca: FLOWCHART_ASCII_VISUAL.txt → Section 1 (5 menit)
+2. Baca: FLOWCHART_SISTEM_TEXT_FORMAT.txt → Section 1 (10 menit)
+3. Lihat: FLOWCHART_SISTEM_DETAIL.md → Diagram 1 & 2 (10 menit)
+
+Untuk Developer:
+1. Baca: FLOWCHART_SISTEM_TEXT_FORMAT.txt → Section 2, 3, 6, 14 (30 menit)
+2. Lihat: FLOWCHART_SISTEM_DETAIL.md → All diagrams (20 menit)
+3. Deep dive: FLOWCHART_SISTEM_TEXT_FORMAT.txt → All sections (60 menit)
+
+Untuk Architect/Lead:
+1. Lihat: FLOWCHART_SISTEM_DETAIL.md → Diagram 8 (Architecture) (10 menit)
+2. Baca: FLOWCHART_ASCII_VISUAL.txt → Section 8 (Deployment) (15 menit)
+3. Baca: FLOWCHART_SISTEM_TEXT_FORMAT.txt → Section 10-14 (40 menit)
+
+
+📝 NOTES
+═══════════════════════════════════════════════════════════════════════════════
+
+• Semua file di-generate untuk project klasifikasi-tomat
+• Format dapat di-update sesuai perkembangan sistem
+• Rekomendasi: Simpan semua 3 file di version control (Git)
+• Update documentation saat ada perubahan sistem
+• Maintain consistency across all three formats
+• Review & validate dokumentasi setiap quarter
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Created: 2026-05-07
+Last Updated: 2026-05-07
+Status: ✅ COMPLETE
+Documentation Version: 1.0
+
+Untuk pertanyaan atau update dokumentasi, lihat README.md di root project.
+
+═══════════════════════════════════════════════════════════════════════════════

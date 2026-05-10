@@ -131,18 +131,28 @@ $imagePath = $uploadPath . '/' . $filename;
                     )
                     ->post($this->flaskApiUrl);
 
-                if ($response->failed()) {
-                    if ($attempt < $maxRetries + 1) {
-                        usleep($retryDelay * 1000);
-                        continue;
-                    }
-                    return [
-                        'success' => false,
-                        'error' => 'Gagal menghubungi API klasifikasi. Status: ' . $response->status()
-                    ];
-                }
-
                 $result = $response->json();
+
+        // Jika gambar bukan tomat / confidence rendah
+            if ($response->status() == 422) {
+
+                 return [
+                'success' => false,
+                'error' => $result['message'] ?? 'Gambar bukan tomat'
+                     ];
+            }
+                if ($response->failed()) {
+
+    if ($attempt < $maxRetries + 1) {
+        usleep($retryDelay * 1000);
+        continue;
+    }
+
+    return [
+        'success' => false,
+        'error' => 'Gagal menghubungi API klasifikasi. Status: ' . $response->status()
+    ];
+}
 
                 // Validate API response structure
                 if (!isset($result['success'])) {
@@ -281,14 +291,22 @@ $imagePath = $uploadPath . '/' . $filename;
 
         // Verifikasi password dan pastikan role adalah 'admin'
         if ($user && \Hash::check($password, $user->password) && $user->role === 'admin') {
-            // Simpan session
+            // Regenerate session untuk security
+            $request->session()->regenerate();
+            
+            // Simpan session admin
             session([
                 'admin_logged_in' => true,
                 'admin_user_id' => $user->id,
-                'admin_name' => $user->name
+                'admin_name' => $user->name,
+                'admin_email' => $user->email
             ]);
             
-            return redirect()->route('admin.dashboard')->with('success', 'Login berhasil! Selamat datang, ' . $user->name);
+            // Save session explicitly to ensure persistence
+            session()->save();
+            
+            return redirect()->route('admin.dashboard')
+                ->with('success', 'Login berhasil! Selamat datang, ' . $user->name);
         }
 
         // Login gagal

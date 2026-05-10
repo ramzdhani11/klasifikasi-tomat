@@ -80,7 +80,7 @@
                                 <button type="button" class="btn btn-primary" onclick="document.getElementById('imageInput').click()">
                                     <i class="fas fa-folder-open me-2"></i>Pilih File
                                 </button>
-                                <p class="text-muted mt-3">Format: PNG, JPG, JPEG (Max: 16MB)</p>
+                                <p class="text-muted mt-3">Format: PNG, JPG, JPEG (Max: 10MB)</p>
                             </div>
 
                             <!-- Preview Area -->
@@ -124,7 +124,7 @@
                             <div class="card-body text-center">
                                 <i class="fas fa-palette fa-3x text-success mb-3"></i>
                                 <h5>Color Histogram</h5>
-                                <p class="text-muted small">Ekstraksi fitur RGB 8x8x8 untuk analisis warna</p>
+                                <p class="text-muted small">Ekstraksi fitur HSV 8x8x8 untuk analisis warna</p>
                             </div>
                         </div>
                     </div>

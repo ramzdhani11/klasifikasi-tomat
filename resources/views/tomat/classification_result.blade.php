@@ -14,7 +14,7 @@
     <nav class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <span class="text-2xl font-bold text-red-600">MaturityScan Tomat</span>
+                <span class="text-2xl font-bold text-red-600">TomatScan</span>
                 <a href="/" class="text-gray-900 hover:text-red-600 px-3 py-2 text-sm font-medium">Home</a>
             </div>
         </div>
@@ -31,12 +31,12 @@
             @endif
 
             @if(isset($result) && $result['success'])
-                @php
-                    $predictionClass = $result['prediction']['class'];
-                    $confidence      = $result['prediction']['confidence_percentage'];
-                    $probabilities   = $result['prediction']['probabilities'];
-                    $metadata        = $result['metadata'];
-                @endphp
+                     @php
+                        $predictionClass = $result['prediction']['class'] ?? 'unknown';
+                        $confidence      = $result['prediction']['confidence_percentage'] ?? 0;
+                        $probabilities   = $result['prediction']['probabilities'] ?? [];
+                        $metadata        = $result['metadata'] ?? [];
+                    @endphp
 
                 <div class="bg-white rounded-2xl shadow-lg p-8 lg:p-12">
                     <div class="text-center mb-8">
@@ -73,7 +73,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                 <div><strong>Model:</strong> {{ $metadata['model_type'] ?? 'RandomForest' }}</div>
                                 <div><strong>Waktu Proses:</strong> {{ $metadata['processing_time_seconds'] ?? '-' }} detik</div>
-                                <div><strong>Fitur:</strong> {{ $metadata['features_used'] ?? '-' }}</div>
+                                <div><strong>Fitur:</strong> {{ $metadata['features_used'] ?? '24' }}</div>
                                 <div><strong>Diproses:</strong> {{ $processedAt ? $processedAt->format('d M Y, H:i:s') : '-' }}</div>
                             </div>
                         </div>

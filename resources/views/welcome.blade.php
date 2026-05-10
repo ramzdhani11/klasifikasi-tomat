@@ -17,14 +17,29 @@
 </head>
 <body class="bg-gray-50">
     <!-- Navbar -->
-    <nav class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <span class="text-2xl font-bold text-red-600">MaturityScan Tomat</span>
+<nav class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="flex items-center space-x-2">
+                        <svg viewBox="0 0 100 100" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="62" r="32" fill="#f03d4c"/>
+                            <ellipse cx="40" cy="50" rx="10" ry="7" fill="white" fill-opacity="0.25"/>
+                            <path d="M50 32 Q49 24 47 16" fill="none" stroke="#2d6a4f" stroke-width="2.5" stroke-linecap="round"/>
+                            <path d="M49 28 Q32 18 30 6 Q42 14 50 28" fill="#52b788"/>
+                            <path d="M50 26 Q68 16 71 4 Q58 14 50 27" fill="#74c69d"/>
+                            <line x1="22" y1="58" x2="78" y2="58" stroke="white" stroke-width="1.5" stroke-opacity="0.5" stroke-dasharray="5,3"/>
+                            <line x1="22" y1="66" x2="78" y2="66" stroke="white" stroke-width="1" stroke-opacity="0.3" stroke-dasharray="5,3"/>
+                            <path d="M24 46 L24 40 L30 40" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-opacity="0.8"/>
+                            <path d="M76 46 L76 40 L70 40" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-opacity="0.8"/>
+                            <path d="M24 80 L24 86 L30 86" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-opacity="0.8"/>
+                            <path d="M76 80 L76 86 L70 86" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-opacity="0.8"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-black">Tomat<span class="text-green-700">Scan</span></span>
                     </div>
                 </div>
+            </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
                         <a href="#" class="text-gray-900 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Beranda</a>
@@ -54,7 +69,7 @@
                         Klasifikasi Kematangan Tomat Otomatis
                     </h1>
                     <p class="text-lg text-gray-600 mb-8 leading-relaxed text-justify">
-                        MaturityScan Tomat adalah aplikasi berbasis website yang membantu Anda menentukan tingkat kematangan tomat secara otomatis menggunakan analisis citra digital. Sistem memanfaatkan metode Color Histogram dan algoritma Random Forest untuk memberikan hasil klasifikasi yang cepat dan objektif.
+                        TomatScan adalah aplikasi berbasis website yang membantu Anda menentukan tingkat kematangan tomat secara otomatis menggunakan analisis citra digital. Sistem memanfaatkan metode Color Histogram dan algoritma Random Forest untuk memberikan hasil klasifikasi yang cepat dan objektif.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                         <a href="{{ route('tomat.upload') }}" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 inline-block text-center">
@@ -154,7 +169,7 @@
                             <i class="fas fa-palette text-lg md:text-2xl text-white"></i>
                         </div>
                         <h3 class="text-lg md:text-xl font-bold text-gray-900 mb-2 md:mb-4">Ekstraksi Fitur Warna</h3>
-                        <p class="text-sm md:text-base text-gray-600 text-justify md:text-center">Sistem mengekstraksi fitur warna menggunakan<br>Color Histogram (RGB) untuk membaca distribusi warna tomat.</p>
+                        <p class="text-sm md:text-base text-gray-600 text-justify md:text-center">Sistem mengekstraksi fitur warna menggunakan<br>Color Histogram (HSV) untuk membaca distribusi warna tomat.</p>
                     </div>
                     <div class="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2">
                         <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
@@ -218,7 +233,7 @@
                         </a>
                     </div>
                     <div class="mt-4">
-                        <p class="text-gray-400 text-sm">© 2026 MaturityScanTomat. All rights reserved.</p>
+                        <p class="text-gray-400 text-sm">© 2026 TomatScan. All rights reserved.</p>
                     </div>
                 </div>
             </div>

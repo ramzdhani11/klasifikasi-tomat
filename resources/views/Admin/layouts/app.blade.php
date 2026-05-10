@@ -8,25 +8,74 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts - Inter -->
+    <!-- Preconnect ke CDN untuk lebih cepat -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- DNS Prefetch untuk domain eksternal -->
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    
+    <!-- Tailwind CSS dengan preload -->
+    <script src="https://cdn.tailwindcss.com" defer></script>
+    
+    <!-- Google Fonts - Inter dengan font-display: swap (non-blocking) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    
+    <!-- Font Awesome dengan async loading -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    <!-- Chart.js (only load on pages that need it) -->
+    <!-- Chart.js (defer loading untuk non-blocking) -->
     @if(request()->routeIs('admin.dashboard') || request()->routeIs('admin.system-statistics'))
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     @endif
     
     <style>
+        /* Performance optimization: Use system fonts for faster render */
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        /* Skeleton Loading Animation - untuk loading state */
+        @keyframes skeleton-loading {
+            0% {
+                background-color: hsl(200, 20%, 80%);
+            }
+            100% {
+                background-color: hsl(200, 20%, 95%);
+            }
+        }
+        
+        .skeleton {
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+        
+        /* Image lazy loading - prevent layout shift */
+        img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+        
+        /* Reduce paint/reflow for better performance */
+        .stat-card {
+            will-change: transform;
+            contain: layout style paint;
+        }
+        
+        .chart-card {
+            contain: layout style paint;
+        }
+        
+        /* GPU acceleration untuk smooth animations */
+        #sidebar-wrapper {
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
         }
         
         /* Dark Mode Styles */
@@ -255,34 +304,38 @@
 </head>
 <body class="bg-gray-50">
     <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        @include('Admin.partials.sidebar')
+        <!-- Sidebar - Fixed on Desktop, Toggleable on Mobile -->
+        <div id="sidebar-wrapper" class="fixed md:relative md:w-64 w-64 h-screen bg-white border-r border-gray-200 transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-30">
+            @include('Admin.partials.sidebar')
+        </div>
+        
+        <!-- Mobile Overlay (Hidden by default) -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-20"></div>
         
         <!-- Main Content -->
         <div class="flex-1 overflow-auto">
             <!-- Top Navigation -->
             <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
-                <div class="flex items-center justify-between px-6 py-4">
-                    <div class="flex-1">
+                <div class="flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+                    <div class="flex items-center flex-1">
+                        <!-- Mobile Menu Toggle -->
+                        <button id="menuToggle" class="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors mr-2">
+                            <i class="fas fa-bars text-xl text-gray-600"></i>
+                        </button>
                         <!-- Page Title (Mobile) -->
-                        <h1 class="text-lg font-semibold text-gray-900 md:hidden">@yield('page-title')</h1>
+                        <h1 class="text-base md:text-lg font-semibold text-gray-900">@yield('page-title')</h1>
                     </div>
                     
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 md:space-x-4">
                         <!-- Dark Mode Toggle -->
                         <button id="darkModeToggle" class="relative p-2 text-gray-600 hover:text-gray-900 transition-colors" title="Toggle Dark Mode">
-                            <i class="fas fa-moon text-xl" id="darkModeIcon"></i>
+                            <i class="fas fa-moon text-lg md:text-xl" id="darkModeIcon"></i>
                         </button>
                         
-                        <button class="relative p-2 text-gray-600 hover:text-gray-900 transition-colors">
-                            <i class="fas fa-bell text-xl"></i>
-                            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                        </button>
-                        
-                        <div class="flex items-center space-x-3">
-                            <a href="{{ route('admin.logout') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-all">
+                        <div class="flex items-center space-x-2 md:space-x-3">
+                            <a href="{{ route('admin.logout') }}" class="sidebar-item flex items-center space-x-1 md:space-x-3 px-2 md:px-4 py-2 md:py-3 rounded-lg text-red-600 hover:bg-red-50 transition-all text-sm md:text-base">
                                 <i class="fas fa-sign-out-alt w-5"></i>
-                                <span>Logout</span>
+                                <span class="hidden sm:inline">Logout</span>
                             </a>
                         </div>
                     </div>
@@ -298,6 +351,120 @@
     
     <!-- Common JavaScript -->
     <script>
+        // Service Worker Registration untuk caching dan offline support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                // Register service worker async agar tidak block rendering
+                navigator.serviceWorker.register('/sw.js', { scope: '/admin/' }).catch(err => {
+                    // Silent fail - optional caching, tidak blocking
+                    console.log('Service Worker registration failed:', err);
+                });
+            });
+        }
+        
+        // Performance Monitoring untuk tracking page load speed
+        window.addEventListener('load', function() {
+            // Log performance metrics untuk device lemot
+            if (window.performance && window.performance.timing) {
+                const perfData = window.performance.timing;
+                const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+                const connectTime = perfData.responseEnd - perfData.requestStart;
+                const renderTime = perfData.domComplete - perfData.domLoading;
+                
+                console.log('📊 Performance Metrics:');
+                console.log('- Page Load:', pageLoadTime + 'ms');
+                console.log('- Connect Time:', connectTime + 'ms');
+                console.log('- Render Time:', renderTime + 'ms');
+            }
+        });
+        
+        // Lazy load images dengan Intersection Observer
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.removeAttribute('data-src');
+                            imageObserver.unobserve(img);
+                        }
+                    }
+                });
+            }, {
+                rootMargin: '50px'
+            });
+            
+            // Observe all lazy images
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
+        
+        // Hamburger Menu Toggle untuk Mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebarWrapper = document.getElementById('sidebar-wrapper');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            
+            // Toggle sidebar saat hamburger diklik
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isHidden = sidebarWrapper.classList.contains('-translate-x-full');
+                    
+                    if (isHidden) {
+                        // Buka sidebar
+                        sidebarWrapper.classList.remove('-translate-x-full');
+                        sidebarOverlay.classList.remove('hidden');
+                    } else {
+                        // Tutup sidebar
+                        sidebarWrapper.classList.add('-translate-x-full');
+                        sidebarOverlay.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // Tutup sidebar saat overlay diklik
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', function() {
+                    sidebarWrapper.classList.add('-translate-x-full');
+                    sidebarOverlay.classList.add('hidden');
+                });
+            }
+            
+            // Tutup sidebar saat menu link diklik (mobile only)
+            const navLinks = document.querySelectorAll('.sidebar-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    // Hanya tutup di mobile (< 768px)
+                    if (window.innerWidth < 768) {
+                        sidebarWrapper.classList.add('-translate-x-full');
+                        sidebarOverlay.classList.add('hidden');
+                    }
+                });
+            });
+            
+            // Handle resize untuk responsive behavior
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    // Jika window > md (768px), reset sidebar position
+                    if (window.innerWidth >= 768) {
+                        sidebarWrapper.classList.remove('-translate-x-full');
+                        sidebarOverlay.classList.add('hidden');
+                    } else {
+                        // Jika window < md (768px), hide sidebar dan overlay
+                        if (!sidebarWrapper.classList.contains('-translate-x-full')) {
+                            sidebarWrapper.classList.add('-translate-x-full');
+                        }
+                        sidebarOverlay.classList.add('hidden');
+                    }
+                }, 250);
+            });
+        });
+        
         // Dark Mode Toggle
         document.addEventListener('DOMContentLoaded', function() {
             const darkModeToggle = document.getElementById('darkModeToggle');
@@ -335,7 +502,8 @@
             });
             
             // Initialize tooltips and other common UI elements
-            console.log('Admin Dashboard loaded');
+            console.log('Admin Dashboard loaded - Responsive mode active');
+            console.log('Viewport width:', window.innerWidth, 'px');
         });
     </script>
     
