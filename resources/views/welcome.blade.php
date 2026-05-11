@@ -14,6 +14,47 @@
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Cegah layout shift saat gambar loading */
+        img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Placeholder abu-abu saat gambar belum load */
+        img:not([src]), img[src=""] {
+            background-color: #f3f4f6;
+            min-height: 100px;
+        }
+
+        /* Animasi skeleton untuk gambar loading */
+        @keyframes skeleton-pulse {
+            0% { background-color: #e5e7eb; }
+            100% { background-color: #f9fafb; }
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Reduce motion untuk device hemat baterai */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* GPU acceleration untuk animasi hover */
+        .hover\:scale-105,
+        .hover\:-translate-y-2,
+        .hover\:rotate-0 {
+            will-change: transform;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
     <!-- Navbar -->
@@ -50,12 +91,36 @@
                     </div>
                 </div>
                 <div class="md:hidden">
-                    <button class="text-gray-500 hover:text-gray-700 focus:outline-none">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <button id="mobileMenuBtn" 
+                            class="text-gray-500 hover:text-gray-700 focus:outline-none p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                            aria-label="Buka menu"
+                            aria-expanded="false">
+                        <svg id="iconHamburger" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <svg id="iconClose" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
+            </div>
+        </div>
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobileMenu" 
+             class="hidden md:hidden border-t border-gray-100 bg-white">
+            <div class="px-4 py-3 space-y-1">
+                <a href="#" 
+                   class="block px-3 py-2 rounded-lg text-gray-900 hover:bg-red-50 hover:text-red-600 font-medium transition-colors">
+                    Beranda
+                </a>
+                <a href="{{ route('about') }}" 
+                   class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600 font-medium transition-colors">
+                    Tentang Kami
+                </a>
+                <a href="{{ route('login') }}" 
+                   class="block w-full text-center bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors mt-2">
+                    Login
+                </a>
             </div>
         </div>
     </nav>
@@ -84,6 +149,8 @@
                     <div class="bg-white rounded-2xl shadow-2xl p-8 transform rotate-3 hover:rotate-0 transition-transform duration-300">
                         <img src="{{ asset('assets/images/tomatt.png') }}" 
                              alt="Fresh Tomatoes" 
+                             loading="lazy"
+                             decoding="async"
                              class="rounded-lg shadow-md w-full h-auto">
                     </div>
                 </div>
@@ -102,7 +169,11 @@
                 <!-- Mentah Card -->
                 <div class="bg-green-50 border-2 border-green-200 rounded-xl p-8 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
                     <div class="w-32 h-32 bg-green-500 rounded-full mx-auto mb-6 flex items-center justify-center p-2">
-                        <img src="{{ asset('assets/images/mentah.jpg') }}" alt="Tomat Mentah" class="w-full h-full object-contain rounded-full">
+                        <img src="{{ asset('assets/images/mentah.jpg') }}" 
+                             alt="Tomat Mentah" 
+                             loading="lazy"
+                             decoding="async"
+                             class="w-full h-full object-contain rounded-full">
                     </div>
                     <h3 class="text-2xl font-bold text-green-800 mb-4">Mentah</h3>
                     <p class="text-gray-600 mb-4">Tomat yang belum matang sempurna, berwarna hijau dan tekstur masih keras.</p>
@@ -114,7 +185,11 @@
                 <!-- Setengah Matang Card -->
                 <div class="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-8 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
                     <div class="w-32 h-32 bg-yellow-500 rounded-full mx-auto mb-6 flex items-center justify-center p-2">
-                        <img src="{{ asset('assets/images/setengahmateng.jpg') }}" alt="Tomat Setengah Matang" class="w-full h-full object-contain rounded-full">
+                        <img src="{{ asset('assets/images/setengahmateng.jpg') }}" 
+                             alt="Tomat Setengah Matang" 
+                             loading="lazy"
+                             decoding="async"
+                             class="w-full h-full object-contain rounded-full">
                     </div>
                     <h3 class="text-2xl font-bold text-yellow-800 mb-4">Setengah Matang</h3>
                     <p class="text-gray-600 mb-4">Tomat dalam proses pematangan, perpaduan warna hijau dan merah.</p>
@@ -126,7 +201,11 @@
                 <!-- Matang Card -->
                 <div class="bg-red-50 border-2 border-red-200 rounded-xl p-8 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
                     <div class="w-32 h-32 bg-red-500 rounded-full mx-auto mb-6 flex items-center justify-center p-2">
-                        <img src="{{ asset('assets/images/matang.jpg') }}" alt="Tomat Matang" class="w-full h-full object-contain rounded-full">
+                        <img src="{{ asset('assets/images/matang.jpg') }}" 
+                             alt="Tomat Matang" 
+                             loading="lazy"
+                             decoding="async"
+                             class="w-full h-full object-contain rounded-full">
                     </div>
                     <h3 class="text-2xl font-bold text-red-800 mb-4">Matang</h3>
                     <p class="text-gray-600 mb-4">Tomat matang sempurna, berwarna merah cerah dan tekstur lembut.</p>
@@ -239,5 +318,80 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        // =====================
+        // MOBILE MENU TOGGLE
+        // =====================
+        (function() {
+            var btn = document.getElementById('mobileMenuBtn');
+            var menu = document.getElementById('mobileMenu');
+            var iconOpen = document.getElementById('iconHamburger');
+            var iconClose = document.getElementById('iconClose');
+
+            if (!btn || !menu) return;
+
+            btn.addEventListener('click', function() {
+                var isOpen = !menu.classList.contains('hidden');
+
+                if (isOpen) {
+                    menu.classList.add('hidden');
+                    iconOpen.classList.remove('hidden');
+                    iconClose.classList.add('hidden');
+                    btn.setAttribute('aria-expanded', 'false');
+                } else {
+                    menu.classList.remove('hidden');
+                    iconOpen.classList.add('hidden');
+                    iconClose.classList.remove('hidden');
+                    btn.setAttribute('aria-expanded', 'true');
+                }
+            });
+
+            // Tutup menu saat link diklik
+            menu.querySelectorAll('a').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    menu.classList.add('hidden');
+                    iconOpen.classList.remove('hidden');
+                    iconClose.classList.add('hidden');
+                    btn.setAttribute('aria-expanded', 'false');
+                });
+            });
+
+            // Tutup menu saat resize ke desktop
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 768) {
+                    menu.classList.add('hidden');
+                    iconOpen.classList.remove('hidden');
+                    iconClose.classList.add('hidden');
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
+
+        // =====================
+        // LAZY LOAD GAMBAR FALLBACK
+        // untuk browser lama yang tidak support loading="lazy"
+        // =====================
+        (function() {
+            if ('loading' in HTMLImageElement.prototype) return;
+            if (!('IntersectionObserver' in window)) return;
+
+            var obs = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(function(entry) {
+                    if (!entry.isIntersecting) return;
+                    var img = entry.target;
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                    }
+                    observer.unobserve(img);
+                });
+            }, { rootMargin: '200px' });
+
+            document.querySelectorAll('img[loading="lazy"]').forEach(function(img) {
+                obs.observe(img);
+            });
+        })();
+    </script>
 </body>
 </html>

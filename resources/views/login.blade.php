@@ -136,6 +136,13 @@
                         Lupa kata sandi?
                     </a>
                 </div>
+                
+                <!-- Lupa Kata Sandi (Disabled) -->
+                <div>
+                    <span class="text-sm text-gray-400 cursor-not-allowed">
+                        Lupa kata sandi?
+                    </span>
+                </div>
 
                 <!-- Login Button -->
                 <div>
@@ -154,16 +161,6 @@
                     </button>
                 </div>
             </form>
-
-            <!-- Additional Links -->
-            <div class="mt-6 text-center">
-                <p class="text-sm text-gray-600">
-                    Belum punya akun admin? 
-                    <a href="{{ route('admin.manage-admin') }}" class="text-red-600 hover:text-red-700 font-medium transition-colors">
-                        Hubungi administrator
-                    </a>
-                </p>
-            </div>
         </div>
 
         <!-- Security Notice -->
@@ -176,7 +173,7 @@
 
     <!-- Footer -->
     <footer class="fixed bottom-4 left-4 text-xs text-gray-300 opacity-60">
-        Made with ♥ by MaturityScan
+        Made with ♥ by TomatScan
     </footer>
 
     <script>
@@ -209,16 +206,16 @@
             btnLoading.classList.remove('hidden');
         });
 
-        // Auto-focus username field on load
+        // Auto-focus email field on load
         window.addEventListener('load', function() {
-            document.getElementById('username').focus();
+            document.getElementById('email').focus();
         });
 
         // Add keyboard navigation
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 const activeElement = document.activeElement;
-                if (activeElement.id === 'username') {
+                if (activeElement.id === 'email') {
                     e.preventDefault();
                     document.getElementById('password').focus();
                 }

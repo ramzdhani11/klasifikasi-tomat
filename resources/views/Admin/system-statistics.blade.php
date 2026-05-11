@@ -217,135 +217,157 @@ PIE CHART DATASET
 @section('scripts')
 <script>
 
-// Detect mobile
-const isMobileStats = window.innerWidth < 768;
-
-/* ==================================================
-BAR CHART
-================================================== */
-new Chart(document.getElementById('barChart'), {
-    type: 'bar',
-    data: {
-        labels: @json($hariLabels),
-        datasets: [{
-            label: 'Jumlah',
-            data: @json($hariData),
-            backgroundColor: '#ef4444',
-            borderRadius: 8,
-            barThickness: isMobileStats ? 20 : 34,
-            borderSkipped: false
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { display:false },
-            tooltip: {
-                titleFont: { size: isMobileStats ? 11 : 13 },
-                bodyFont: { size: isMobileStats ? 10 : 12 }
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: { precision: 0, font: { size: isMobileStats ? 10 : 12 } },
-                grid: { drawBorder: false, color: 'rgba(0,0,0,0.05)' }
-            },
-            x: {
-                grid: { display: false },
-                ticks: { font: { size: isMobileStats ? 10 : 12 } }
-            }
-        }
+// Tunggu sampai Chart.js library loaded
+function initStatisticsCharts() {
+    if (typeof Chart === 'undefined') {
+        console.warn('Chart.js belum loaded, retry dalam 100ms');
+        setTimeout(initStatisticsCharts, 100);
+        return;
     }
-});
 
+    // Detect mobile
+    const isMobileStats = window.innerWidth < 768;
 
-/* ==================================================
-LINE CHART
-================================================== */
-new Chart(document.getElementById('lineChart'), {
-    type: 'line',
-    data: {
-        labels: @json($bulanLabels),
-        datasets: [{
-            label:'Jumlah',
-            data: @json($bulanData),
-            borderColor: '#ef4444',
-            backgroundColor: 'rgba(239,68,68,0.10)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: isMobileStats ? 3 : 4,
-            pointBorderWidth: 0,
-            borderWidth: 2
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-            intersect: false,
-            mode: 'index'
-        },
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                titleFont: { size: isMobileStats ? 11 : 13 },
-                bodyFont: { size: isMobileStats ? 10 : 12 }
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: { precision: 0, font: { size: isMobileStats ? 10 : 12 } },
-                grid: { drawBorder: false, color: 'rgba(0,0,0,0.05)' }
+    /* ==================================================
+    BAR CHART
+    ================================================== */
+    try {
+        new Chart(document.getElementById('barChart'), {
+            type: 'bar',
+            data: {
+                labels: @json($hariLabels),
+                datasets: [{
+                    label: 'Jumlah',
+                    data: @json($hariData),
+                    backgroundColor: '#ef4444',
+                    borderRadius: 8,
+                    barThickness: isMobileStats ? 20 : 34,
+                    borderSkipped: false
+                }]
             },
-            x: {
-                grid: { display: false },
-                ticks: { font: { size: isMobileStats ? 10 : 12 } }
-            }
-        }
-    }
-});
-
-
-/* ==================================================
-PIE CHART
-================================================== */
-new Chart(document.getElementById('pieChart'), {
-    type: 'pie',
-    data: {
-        labels: @json(array_column($distribusiData, 'label')),
-        datasets: [{
-            data: @json(array_column($distribusiData, 'jumlah')),
-            backgroundColor: [
-                '#22c55e',
-                '#eab308',
-                '#ef4444'
-            ],
-            borderWidth: 1,
-            borderColor: '#fff'
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: 'bottom',
-                labels: {
-                    font: { size: isMobileStats ? 10 : 12 },
-                    padding: isMobileStats ? 10 : 15,
-                    usePointStyle: true
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display:false },
+                    tooltip: {
+                        titleFont: { size: isMobileStats ? 11 : 13 },
+                        bodyFont: { size: isMobileStats ? 10 : 12 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0, font: { size: isMobileStats ? 10 : 12 } },
+                        grid: { drawBorder: false, color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: isMobileStats ? 10 : 12 } }
+                    }
                 }
-            },
-            tooltip: {
-                titleFont: { size: isMobileStats ? 11 : 13 },
-                bodyFont: { size: isMobileStats ? 10 : 12 }
             }
-        }
+        });
+    } catch (error) {
+        console.error('Error initializing bar chart:', error);
     }
-});
+
+    /* ==================================================
+    LINE CHART
+    ================================================== */
+    try {
+        new Chart(document.getElementById('lineChart'), {
+            type: 'line',
+            data: {
+                labels: @json($bulanLabels),
+                datasets: [{
+                    label:'Jumlah',
+                    data: @json($bulanData),
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239,68,68,0.10)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: isMobileStats ? 3 : 4,
+                    pointBorderWidth: 0,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        titleFont: { size: isMobileStats ? 11 : 13 },
+                        bodyFont: { size: isMobileStats ? 10 : 12 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0, font: { size: isMobileStats ? 10 : 12 } },
+                        grid: { drawBorder: false, color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: isMobileStats ? 10 : 12 } }
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error initializing line chart:', error);
+    }
+
+    /* ==================================================
+    PIE CHART
+    ================================================== */
+    try {
+        new Chart(document.getElementById('pieChart'), {
+            type: 'pie',
+            data: {
+                labels: @json(array_column($distribusiData, 'label')),
+                datasets: [{
+                    data: @json(array_column($distribusiData, 'jumlah')),
+                    backgroundColor: [
+                        '#22c55e',
+                        '#eab308',
+                        '#ef4444'
+                    ],
+                    borderWidth: 1,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { size: isMobileStats ? 10 : 12 },
+                            padding: isMobileStats ? 10 : 15,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        titleFont: { size: isMobileStats ? 11 : 13 },
+                        bodyFont: { size: isMobileStats ? 10 : 12 }
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error initializing pie chart:', error);
+    }
+}
+
+// Initialize charts saat DOM ready
+document.addEventListener('DOMContentLoaded', initStatisticsCharts);
 
 </script>
 @endsection

@@ -17,9 +17,6 @@
     <!-- DNS Prefetch untuk domain eksternal -->
     <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
     
-    <!-- Tailwind CSS dengan preload -->
-    <script src="https://cdn.tailwindcss.com" defer></script>
-    
     <!-- Google Fonts - Inter dengan font-display: swap (non-blocking) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
@@ -30,10 +27,17 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    <!-- Chart.js (defer loading untuk non-blocking) -->
+    <!-- Chart.js (tanpa defer agar library siap sebelum scripts lain) -->
     @if(request()->routeIs('admin.dashboard') || request()->routeIs('admin.system-statistics'))
-        <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     @endif
+    
+    <!-- Anti-flash dark mode script -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
     
     <style>
         /* Performance optimization: Use system fonts for faster render */
@@ -300,27 +304,88 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
+        
+        /* ===== SIDEBAR RESPONSIVE ===== */
+        #sidebar-wrapper {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100% !important;
+            z-index: 50;
+            transform: translateX(-100%) !important;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            overflow-y: auto;
+            will-change: transform;
+            background: #fff;
+        }
+        #sidebar-wrapper.is-open {
+            transform: translateX(0) !important;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+        }
+        @media (min-width: 768px) {
+            #sidebar-wrapper {
+                position: relative !important;
+                width: 256px !important;
+                height: auto !important;
+                transform: translateX(0) !important;
+                box-shadow: none !important;
+                transition: none !important;
+                z-index: auto !important;
+                flex-shrink: 0;
+            }
+        }
+        #sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 45;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #sidebar-overlay.is-active {
+            display: block;
+            opacity: 1;
+        }
+        @media (min-width: 768px) {
+            #sidebar-overlay { display: none !important; }
+        }
+        .main-content-area {
+            min-width: 0;
+            flex: 1;
+            overflow: auto;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar - Fixed on Desktop, Toggleable on Mobile -->
-        <div id="sidebar-wrapper" class="fixed md:relative md:w-64 w-64 h-screen bg-white border-r border-gray-200 transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-30">
+        <div id="sidebar-wrapper" class="bg-white border-r border-gray-200">
             @include('Admin.partials.sidebar')
         </div>
         
         <!-- Mobile Overlay (Hidden by default) -->
-        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-20"></div>
+        <div id="sidebar-overlay"></div>
         
         <!-- Main Content -->
-        <div class="flex-1 overflow-auto">
+        <div class="main-content-area">
             <!-- Top Navigation -->
             <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
                 <div class="flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
                     <div class="flex items-center flex-1">
                         <!-- Mobile Menu Toggle -->
-                        <button id="menuToggle" class="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors mr-2">
-                            <i class="fas fa-bars text-xl text-gray-600"></i>
+                        <button id="menuToggle" 
+                                class="md:hidden flex items-center justify-center"
+                                style="min-width:44px; min-height:44px; background:transparent; border:none; cursor:pointer; margin-right:0.5rem;"
+                                aria-label="Buka menu"
+                                aria-expanded="false">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" 
+                                 xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <rect y="4"  width="24" height="2.5" rx="1.25" fill="#374151"/>
+                                <rect y="11" width="24" height="2.5" rx="1.25" fill="#374151"/>
+                                <rect y="18" width="24" height="2.5" rx="1.25" fill="#374151"/>
+                            </svg>
                         </button>
                         <!-- Page Title (Mobile) -->
                         <h1 class="text-base md:text-lg font-semibold text-gray-900">@yield('page-title')</h1>
@@ -406,62 +471,52 @@
             const menuToggle = document.getElementById('menuToggle');
             const sidebarWrapper = document.getElementById('sidebar-wrapper');
             const sidebarOverlay = document.getElementById('sidebar-overlay');
-            
-            // Toggle sidebar saat hamburger diklik
+
+            function openSidebar() {
+                sidebarWrapper.classList.add('is-open');
+                sidebarOverlay.classList.add('is-active');
+                document.body.style.overflow = 'hidden';
+                if (menuToggle) menuToggle.setAttribute('aria-expanded', 'true');
+            }
+
+            function closeSidebar() {
+                sidebarWrapper.classList.remove('is-open');
+                sidebarOverlay.classList.remove('is-active');
+                document.body.style.overflow = '';
+                if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
+            }
+
             if (menuToggle) {
                 menuToggle.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    const isHidden = sidebarWrapper.classList.contains('-translate-x-full');
-                    
-                    if (isHidden) {
-                        // Buka sidebar
-                        sidebarWrapper.classList.remove('-translate-x-full');
-                        sidebarOverlay.classList.remove('hidden');
-                    } else {
-                        // Tutup sidebar
-                        sidebarWrapper.classList.add('-translate-x-full');
-                        sidebarOverlay.classList.add('hidden');
-                    }
+                    sidebarWrapper.classList.contains('is-open') ? closeSidebar() : openSidebar();
                 });
             }
-            
-            // Tutup sidebar saat overlay diklik
+
             if (sidebarOverlay) {
-                sidebarOverlay.addEventListener('click', function() {
-                    sidebarWrapper.classList.add('-translate-x-full');
-                    sidebarOverlay.classList.add('hidden');
-                });
+                sidebarOverlay.addEventListener('click', closeSidebar);
             }
-            
-            // Tutup sidebar saat menu link diklik (mobile only)
-            const navLinks = document.querySelectorAll('.sidebar-link');
-            navLinks.forEach(link => {
+
+            document.querySelectorAll('#sidebar-wrapper .sidebar-link, #sidebar-wrapper a').forEach(function(link) {
                 link.addEventListener('click', function() {
-                    // Hanya tutup di mobile (< 768px)
-                    if (window.innerWidth < 768) {
-                        sidebarWrapper.classList.add('-translate-x-full');
-                        sidebarOverlay.classList.add('hidden');
-                    }
+                    if (window.innerWidth < 768) closeSidebar();
                 });
             });
-            
-            // Handle resize untuk responsive behavior
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeSidebar();
+            });
+
             let resizeTimer;
             window.addEventListener('resize', function() {
                 clearTimeout(resizeTimer);
                 resizeTimer = setTimeout(function() {
-                    // Jika window > md (768px), reset sidebar position
                     if (window.innerWidth >= 768) {
-                        sidebarWrapper.classList.remove('-translate-x-full');
-                        sidebarOverlay.classList.add('hidden');
-                    } else {
-                        // Jika window < md (768px), hide sidebar dan overlay
-                        if (!sidebarWrapper.classList.contains('-translate-x-full')) {
-                            sidebarWrapper.classList.add('-translate-x-full');
-                        }
-                        sidebarOverlay.classList.add('hidden');
+                        sidebarWrapper.classList.remove('is-open');
+                        sidebarOverlay.classList.remove('is-active');
+                        document.body.style.overflow = '';
                     }
-                }, 250);
+                }, 200);
             });
         });
         

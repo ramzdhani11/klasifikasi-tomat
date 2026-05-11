@@ -100,114 +100,133 @@
 @section('scripts')
 <script>
 
-/* =========================
-TREND LINE
-========================= */
-const trendLabels = @json(
-    $trend->pluck('date')->map(fn($d) =>
-        \Carbon\Carbon::parse($d)->translatedFormat('D')
-    )
-);
+// Tunggu sampai Chart.js library loaded
+function initCharts() {
+    if (typeof Chart === 'undefined') {
+        console.warn('Chart.js belum loaded, retry dalam 100ms');
+        setTimeout(initCharts, 100);
+        return;
+    }
 
-const trendData = @json($trend->pluck('total'));
+    /* =========================
+    TREND LINE
+    ========================= */
+    const trendLabels = @json(
+        $trend->pluck('date')->map(fn($d) =>
+            \Carbon\Carbon::parse($d)->translatedFormat('D')
+        )
+    );
 
-// Optimize for mobile
-const isMobile = window.innerWidth < 768;
+    const trendData = @json($trend->pluck('total'));
 
-new Chart(document.getElementById('trendChart'), {
-    type: 'line',
-    data: {
-        labels: trendLabels,
-        datasets: [{
-            data: trendData,
-            borderColor: '#ef4444',
-            backgroundColor: 'rgba(239,68,68,0.10)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: isMobile ? 3 : 5,
-            pointBorderWidth: 0,
-            borderWidth: 2
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-            intersect: false,
-            mode: 'index'
-        },
-        plugins: {
-            legend: { display: false },
-            filler: { propagate: true }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                grid: { drawBorder: false, color: 'rgba(0,0,0,0.05)' },
-                ticks: { font: { size: isMobile ? 10 : 12 } }
+    // Optimize for mobile
+    const isMobile = window.innerWidth < 768;
+
+    try {
+        new Chart(document.getElementById('trendChart'), {
+            type: 'line',
+            data: {
+                labels: trendLabels,
+                datasets: [{
+                    data: trendData,
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239,68,68,0.10)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: isMobile ? 3 : 5,
+                    pointBorderWidth: 0,
+                    borderWidth: 2
+                }]
             },
-            x: {
-                grid: { display: false },
-                ticks: { font: { size: isMobile ? 10 : 12 } }
-            }
-        }
-    }
-});
-
-
-/* =========================
-PIE CHART
-========================= */
-const distLabels = @json(
-    $distribution->pluck('category')->map(
-        fn($c) => ucfirst(str_replace('_',' ',$c))
-    )
-);
-
-const distData = @json($distribution->pluck('total'));
-
-const dynamicColors = distLabels.map(label => {
-    if (label.toLowerCase() === 'matang') {
-        return '#ef4444'; // merah
-    } 
-    else if (label.toLowerCase() === 'mentah') {
-        return '#22c55e'; // hijau
-    } 
-    else {
-        return '#f59e0b'; // kuning/orange
-    }
-});
-
-new Chart(document.getElementById('distributionChart'), {
-    type: 'pie',
-    data: {
-        labels: distLabels,
-        datasets: [{
-            data: distData,
-            backgroundColor: dynamicColors,
-            borderWidth: 1,
-            borderColor: '#fff'
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: isMobile ? 'bottom' : 'bottom',
-                labels: {
-                    font: { size: isMobile ? 10 : 12 },
-                    padding: isMobile ? 10 : 15,
-                    usePointStyle: true
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: { display: false },
+                    filler: { propagate: true }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { drawBorder: false, color: 'rgba(0,0,0,0.05)' },
+                        ticks: { font: { size: isMobile ? 10 : 12 } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: isMobile ? 10 : 12 } }
+                    }
                 }
-            },
-            tooltip: {
-                titleFont: { size: isMobile ? 11 : 13 },
-                bodyFont: { size: isMobile ? 10 : 12 }
             }
-        }
+        });
+    } catch (error) {
+        console.error('Error initializing trend chart:', error);
     }
-});
+
+    /* =========================
+    PIE CHART
+    ========================= */
+    const distLabels = @json(
+        $distribution->pluck('category')->map(
+            fn($c) => ucfirst(str_replace('_',' ',$c))
+        )
+    );
+
+    const distData = @json($distribution->pluck('total'));
+
+    const dynamicColors = distLabels.map(label => {
+        if (label.toLowerCase() === 'matang') {
+            return '#ef4444'; // merah
+        } 
+        else if (label.toLowerCase() === 'mentah') {
+            return '#22c55e'; // hijau
+        } 
+        else {
+            return '#f59e0b'; // kuning/orange
+        }
+    });
+
+    try {
+        new Chart(document.getElementById('distributionChart'), {
+            type: 'pie',
+            data: {
+                labels: distLabels,
+                datasets: [{
+                    data: distData,
+                    backgroundColor: dynamicColors,
+                    borderWidth: 1,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: isMobile ? 'bottom' : 'bottom',
+                        labels: {
+                            font: { size: isMobile ? 10 : 12 },
+                            padding: isMobile ? 10 : 15,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        titleFont: { size: isMobile ? 11 : 13 },
+                        bodyFont: { size: isMobile ? 10 : 12 }
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error initializing distribution chart:', error);
+    }
+}
+
+// Initialize charts saat DOM ready
+document.addEventListener('DOMContentLoaded', initCharts);
 
 </script>
 @endsection

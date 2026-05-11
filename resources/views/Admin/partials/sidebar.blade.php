@@ -32,25 +32,25 @@
     <!-- Navigation Menu -->
     <nav class="flex-1 p-2 md:p-4 space-y-1 md:space-y-2 overflow-y-auto">
         <a href="{{ route('admin.dashboard') }}" 
-           class="sidebar-link flex items-center space-x-3 px-3 md:px-4 py-2 md:py-3 rounded-lg text-sm md:text-base text-gray-700 hover:bg-gray-50 transition-all {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" onclick="document.getElementById('sidebar-wrapper').classList.add('-translate-x-full'); document.getElementById('sidebar-overlay').classList.add('hidden');">
+           class="sidebar-link flex items-center space-x-3 px-3 md:px-4 py-2 md:py-3 rounded-lg text-sm md:text-base text-gray-700 hover:bg-gray-50 transition-all {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
             <i class="fas fa-home w-5 flex-shrink-0"></i>
             <span class="truncate">Dashboard</span>
         </a>
         
         <a href="{{ route('admin.manage-admin') }}" 
-           class="sidebar-link flex items-center space-x-3 px-3 md:px-4 py-2 md:py-3 rounded-lg text-sm md:text-base text-gray-700 hover:bg-gray-50 transition-all {{ request()->routeIs('admin.manage-admin') ? 'active' : '' }}" onclick="document.getElementById('sidebar-wrapper').classList.add('-translate-x-full'); document.getElementById('sidebar-overlay').classList.add('hidden');">
+           class="sidebar-link flex items-center space-x-3 px-3 md:px-4 py-2 md:py-3 rounded-lg text-sm md:text-base text-gray-700 hover:bg-gray-50 transition-all {{ request()->routeIs('admin.manage-admin') ? 'active' : '' }}">
             <i class="fas fa-users w-5 flex-shrink-0"></i>
             <span class="truncate">Kelola Akun Admin</span>
         </a>
         
         <a href="{{ route('admin.classification-history') }}" 
-           class="sidebar-link flex items-center space-x-3 px-3 md:px-4 py-2 md:py-3 rounded-lg text-sm md:text-base text-gray-700 hover:bg-gray-50 transition-all {{ request()->routeIs('admin.classification-history') ? 'active' : '' }}" onclick="document.getElementById('sidebar-wrapper').classList.add('-translate-x-full'); document.getElementById('sidebar-overlay').classList.add('hidden');">
+           class="sidebar-link flex items-center space-x-3 px-3 md:px-4 py-2 md:py-3 rounded-lg text-sm md:text-base text-gray-700 hover:bg-gray-50 transition-all {{ request()->routeIs('admin.classification-history') ? 'active' : '' }}">
             <i class="fas fa-history w-5 flex-shrink-0"></i>
             <span class="truncate">Riwayat Klasifikasi</span>
         </a>
         
         <a href="{{ route('admin.system-statistics') }}" 
-           class="sidebar-link flex items-center space-x-3 px-3 md:px-4 py-2 md:py-3 rounded-lg text-sm md:text-base text-gray-700 hover:bg-gray-50 transition-all {{ request()->routeIs('admin.system-statistics') ? 'active' : '' }}" onclick="document.getElementById('sidebar-wrapper').classList.add('-translate-x-full'); document.getElementById('sidebar-overlay').classList.add('hidden');">
+           class="sidebar-link flex items-center space-x-3 px-3 md:px-4 py-2 md:py-3 rounded-lg text-sm md:text-base text-gray-700 hover:bg-gray-50 transition-all {{ request()->routeIs('admin.system-statistics') ? 'active' : '' }}">
             <i class="fas fa-chart-bar w-5 flex-shrink-0"></i>
             <span class="truncate">Statistik Sistem</span>
         </a>
