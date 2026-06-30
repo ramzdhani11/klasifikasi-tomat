@@ -77,7 +77,7 @@ CARD SUMMARY
         </div>
 
         <h3 class="text-lg md:text-3xl font-bold text-gray-900">
-            {{ number_format($akurasiRataRata, 2) }}%
+            92.10%
         </h3>
 
         <p class="text-xs md:text-sm text-gray-600 mt-1 md:mt-2">

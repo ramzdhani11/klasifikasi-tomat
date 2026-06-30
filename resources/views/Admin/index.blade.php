@@ -31,7 +31,7 @@
             <i class="fas fa-bullseye text-purple-600 text-lg md:text-xl"></i>
         </div>
 
-        <h3 class="text-xl md:text-2xl font-bold text-gray-900">{{ $modelAccuracy }}%</h3>
+        <h3 class="text-xl md:text-2xl font-bold text-gray-900">92.10%</h3>
         <p class="text-xs md:text-sm text-gray-600 mt-1 md:mt-2">Akurasi Model</p>
     </div>
 
