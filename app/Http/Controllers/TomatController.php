@@ -11,7 +11,7 @@ use Intervention\Image\Facades\Image; // ✅ tambah ini
 
 class TomatController extends Controller
 {
-    protected $apiUrl = 'http://127.0.0.1:5000/predict';
+    // protected $apiUrl; // Menggunakan config('services.tomat_api.url')
 
     public function index()
     {
@@ -34,7 +34,7 @@ class TomatController extends Controller
                     file_get_contents($uploadedFile->getRealPath()),
                     $uploadedFile->getClientOriginalName()
                 )
-                ->post($this->apiUrl);
+                ->post(config('services.tomat_api.url') . '/predict');
 
         
             $result = $response->json();
@@ -138,7 +138,7 @@ if ($response->failed()) {
     public function checkService()
     {
         try {
-            $response = Http::timeout(3)->get('http://127.0.0.1:5000/health');
+            $response = Http::timeout(3)->get(config('services.tomat_api.url') . '/health');
 
             if ($response->successful()) {
                 $health = $response->json();
@@ -171,7 +171,7 @@ if ($response->failed()) {
     public function getModelInfo()
     {
         try {
-            $response = Http::timeout(5)->get('http://127.0.0.1:5000/info');
+            $response = Http::timeout(5)->get(config('services.tomat_api.url') . '/info');
 
             if ($response->successful()) {
                 return response()->json($response->json());

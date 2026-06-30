@@ -12,7 +12,7 @@ use Intervention\Image\Facades\Image;
 
 class UploadController extends Controller
 {
-    protected $flaskApiUrl = 'http://127.0.0.1:5000/predict';
+    // protected $flaskApiUrl; // Menggunakan config('services.tomat_api.url')
 
     /**
      * Display the upload page.
@@ -129,7 +129,7 @@ $imagePath = $uploadPath . '/' . $filename;
                         file_get_contents($file->getRealPath()),
                         $file->getClientOriginalName()
                     )
-                    ->post($this->flaskApiUrl);
+                    ->post(config('services.tomat_api.url') . '/predict');
 
                 $result = $response->json();
 

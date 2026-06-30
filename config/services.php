@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'tomat_api' => [
+        'url' => env('TOMAT_API_URL'),
+    ],
+
 ];
