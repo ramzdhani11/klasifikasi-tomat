@@ -154,7 +154,7 @@
 
         async function checkServiceStatus() {
             try {
-                const response = await fetch('{{ route('tomat.service-status') }}');
+                const response = await fetch('/tomat/service-status');
                 const data = await response.json();
                 const statusDiv = document.getElementById('serviceStatus');
 

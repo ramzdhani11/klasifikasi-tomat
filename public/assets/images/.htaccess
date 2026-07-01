@@ -1,0 +1,11 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /E31230483/
+
+    # Izinkan akses langsung ke asset di folder public/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # Arahkan semua request ke index.php di root
+    RewriteRule ^ index.php [L]
+</IfModule>

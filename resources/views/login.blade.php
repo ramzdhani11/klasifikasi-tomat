@@ -44,6 +44,17 @@
                 <h1 class="text-2xl font-bold text-gray-900 mb-2">Login Admin</h1>
                 <p class="text-gray-600 text-sm">Silakan masukkan kredensial Anda untuk melanjutkan.</p>
             </div>
+            
+            <!-- Kredensial Uji Coba (Testing) -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <p class="text-sm font-semibold text-blue-800 mb-1">
+                    Kredensial Uji Coba (Testing)
+                </p>
+                <p class="text-sm text-blue-700">
+                    Email: <span class="font-mono font-medium">admin@gmail.com</span><br>
+                    Password: <span class="font-mono font-medium">12345678</span>
+                </p>
+            </div>
 
             <!-- Login Form -->
             <form class="space-y-6" method="POST" action="{{ route('admin.login.submit') }}">
