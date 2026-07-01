@@ -19,8 +19,7 @@ Route::get('/about', function () {
 
 // Tomat classification routes
 Route::prefix('tomat')->name('tomat.')->group(function () {
-    Route::get('/', [TomatController::class, 'index'])->name('upload');
-    Route::get('/upload', [TomatController::class, 'index'])->name('upload');
+    Route::get('/', [TomatController::class, 'index'])->name('upload'); // ← hapus route /upload yang duplikat
     Route::post('/classify', [TomatController::class, 'classify'])->name('classify');
     Route::get('/result', [TomatController::class, 'getResult'])->name('result');
     Route::get('/service-status', [TomatController::class, 'checkService'])->name('service-status');
@@ -49,10 +48,8 @@ Route::post('/admin/login', [UploadController::class, 'adminLogin'])->name('admi
 
 // Admin routes with middleware
 Route::middleware('admin.auth')->group(function () {
-    // Admin dashboard route
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     
-    // Manage admin routes
     Route::get('/admin/manage-admin', [AdminController::class, 'index'])->name('admin.manage-admin');
     Route::post('/admin/manage-admin', [AdminController::class, 'store'])->name('admin.manage-admin.store');
     Route::get('/admin/manage-admin/{id}/edit', [AdminController::class, 'edit'])->name('admin.manage-admin.edit');
@@ -60,25 +57,14 @@ Route::middleware('admin.auth')->group(function () {
     Route::delete('/admin/manage-admin/{id}', [AdminController::class, 'destroy'])->name('admin.manage-admin.destroy');
     Route::patch('/admin/manage-admin/{id}/toggle-status', [AdminController::class, 'toggleStatus'])->name('admin.manage-admin.toggle-status');
 
-    // Classification history route
     Route::get('/admin/classification-history', [ClassificationHistoryController::class, 'index'])
         ->name('admin.classification-history');
 
-    // System statistics route
     Route::get('/admin/system-statistics', [StatistikController::class, 'index'])
         ->name('admin.system-statistics');
 });
 
 Route::get('/admin/logout', function () {
-    // Clear admin session
     session()->forget(['admin_logged_in', 'admin_user_id', 'admin_name']);
-    
-    // Redirect to login with success message
     return redirect()->route('admin.login')->with('success', 'Anda telah berhasil logout.');
 })->name('admin.logout');
-
-Route::get('/upload', function () {
-    return view('upload');
-});
-
-Route::post('/upload', [TomatController::class, 'upload'])->name('upload');

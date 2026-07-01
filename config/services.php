@@ -36,7 +36,7 @@ return [
     ],
 
     'tomat_api' => [
-        'url' => env('TOMAT_API_URL'),
+        'url' => env('TOMAT_API_URL', 'https://web-production-7b125.up.railway.app'),
     ],
 
 ];
